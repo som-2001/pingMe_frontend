@@ -33,7 +33,7 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schema), 
   });
 
   const [load, setLoad] = useState(false);
