@@ -16,7 +16,7 @@ import coffee from "../coffee.svg";
 import { useNavigate } from "react-router-dom";
 import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
-import Cookies from "cookie";
+import Cookies from "js-cookie";
 
 const schema = yup.object().shape({
   password: yup
@@ -47,12 +47,15 @@ const Login = () => {
     axiosReq
       .post("/auth/login", data)
       .then((res) => {
+        console.log(res.data);
         Cookies.set("accessToken", res.data.accessToken);
         Cookies.set("refreshToken", res.data.refreshToken);
+        toast.success(res.data.message);
+        
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
-        toast.success(res.data.message);
+       
       })
       .catch((err) => {
         console.log(err);
