@@ -62,14 +62,15 @@ export const Chat = () => {
   }, []);
 
   //connect to the room
-  // useEffect(() => {
-  //   const room = `room_${id}`;
-  //   socket.emit("room_join", {
-  //     room: room,
-  //     sender_id: sender_id,
-  //     username: username,
-  //   });
-  // }, [id]);
+  useEffect(() => {
+    const room = `room_${id}`;
+    socket.emit("room_join", {
+      room: room,
+      sender_id: sender_id,
+      username: username,
+      receiver_id:id
+    });
+  }, [id]);
 
   // Opens the attachment popover
   const handleAttachClick = (event) => {
