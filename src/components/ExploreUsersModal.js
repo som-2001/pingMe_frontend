@@ -16,6 +16,9 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useEffect, useRef, useState } from "react";
 import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 export const ExploreUsersModal = ({ open, setOpen }) => {
   const [load, setLoad] = useState(false);
@@ -23,8 +26,9 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
   const [total, setTotal] = useState(0);
   const [users, setUsers] = useState([]);
   const loadRef = useRef(null);
+  const navigate=useNavigate();
+  const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
 
-  // ✅ Fetch Users on Page Change
   useEffect(() => {
     setLoad(true);
     axiosReq
@@ -75,16 +79,23 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
             Explore People
           </Typography>
 
-          <CloseIcon sx={{cursor:"pointer"}} onClick={(e)=>setOpen(false)}/>
+          <CloseIcon
+            sx={{ cursor: "pointer" }}
+            onClick={(e) => setOpen(false)}
+          />
         </Box>
         <List className={styles.list}>
           {users.map((user) => (
-            <ListItem key={user.id} className={styles.listItem}>
+            <ListItem
+              key={user.id}
+              className={styles.listItem}
+              onClick={(e) => navigate(`/chat/${user._id}`,{state:{userDetails:user}})}
+            >
               <ListItemAvatar>
                 <Avatar src={user?.avatar} className={styles.avatar} />
               </ListItemAvatar>
               <ListItemText
-                primary={user?.username}
+                primary={sender_id===user?._id?"You":user?.username}
                 secondary={user?.description}
               />
               <ChevronRightIcon className={styles.chevronIcon} />
@@ -95,18 +106,20 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
         {/* ✅ Loading Indicator for Infinite Scroll */}
 
         <Box>{load && <CircularProgress />}</Box>
-        <Button
-          variant="contained"
-          color="error"
-          ref={loadRef}
-          onClick={(e) => {
-            setLoad(true);
-            setPage((prev) => prev + 1);
-          }}
-          className={styles.closeButton}
-        >
-          Load More
-        </Button>
+        {page !== total && !load && (
+          <Button
+            variant="contained"
+            color="error"
+            ref={loadRef}
+            onClick={(e) => {
+              setLoad(true);
+              setPage((prev) => prev + 1);
+            }}
+            className={styles.closeButton}
+          >
+            Load More
+          </Button>
+        )}
       </Box>
     </Modal>
   );

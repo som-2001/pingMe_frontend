@@ -54,7 +54,7 @@
   }
   
   /* Message bubbles with soft shadows and rounded corners */
-  .messageBubble {
+  .RightmessageBubble {
     background: #ffffff;
     margin-bottom: 15px;
     padding: 15px;
@@ -62,6 +62,20 @@
     box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.05);
     max-width: 75%;
     word-wrap: break-word;
+    float: right;
+    clear: both;
+  }
+
+  .LeftmessageBubble {
+    background: #ffffff;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 16px;
+    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.05);
+    max-width: 75%;
+    word-wrap: break-word;
+    float: left;
+    clear: both;
   }
   
   .timestamp {
@@ -146,6 +160,14 @@
     color: #555;
   }
   
+
+  .reload{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+  }
   /* Responsive adjustments */
   @media (max-width: 600px) {
     .chatContainer {

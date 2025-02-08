@@ -10,12 +10,12 @@ export const UserDetailsModal = ({ headerModalOpen, setHeaderModalOpen,user }) =
       className={styles.headerModal}
     >
       <Box className={styles.headerModalContent}>
-        <img src={user.banner} alt="Banner" className={styles.bannerImage} />
+        <img src={user?.banner} alt="Banner" className={styles.bannerImage} />
         <Typography variant="h5" className={styles.modalName}>
-          {user.name}
+          {user?.username}
         </Typography>
         <Typography variant="body1" className={styles.modalAbout}>
-          {user.about}
+          {user?.description}
         </Typography>
         <IconButton
           onClick={() => setHeaderModalOpen(false)}

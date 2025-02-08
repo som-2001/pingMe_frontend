@@ -179,6 +179,14 @@
   align-items: center;
   margin-bottom: 30px;
 }
+.center{
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 50vh !important;
+  width: 50vw !important;
+}
+
 .modalHeader {
   margin-bottom: 20px;
   font-weight: bold;

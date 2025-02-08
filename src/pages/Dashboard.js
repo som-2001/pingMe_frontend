@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   List,
@@ -8,7 +8,7 @@ import {
   Avatar,
   Typography,
   Button,
-
+  CircularProgress,
 } from "@mui/material";
 import ExploreIcon from "@mui/icons-material/Explore";
 
@@ -19,57 +19,38 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import styles from "../styles/Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 import { ExploreUsersModal } from "../components/ExploreUsersModal";
-
-const users = [
-  {
-    id: 1,
-    name: "John Doe",
-    description: "Software Engineer",
-    avatar: "https://via.placeholder.com/80",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    description: "Product Manager",
-    avatar: "https://via.placeholder.com/80",
-  },
-  {
-    id: 3,
-    name: "Alice Johnson",
-    description: "UX Designer",
-    avatar: "https://via.placeholder.com/80",
-  },
-  {
-    id: 4,
-    name: "Michael Brown",
-    description: "Data Scientist",
-    avatar: "https://via.placeholder.com/80",
-  },
-  {
-    id: 5,
-    name: "Michael Brown",
-    description: "Data Scientist",
-    avatar: "https://via.placeholder.com/80",
-  },
-  {
-    id: 6,
-    name: "Michael Brown",
-    description: "Data Scientist",
-    avatar: "https://via.placeholder.com/80",
-  },
-  {
-    id: 7,
-    name: "Michael Brown",
-    description: "Data Scientist",
-    avatar: "https://via.placeholder.com/80",
-  },
-];
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+import { axiosReq } from "../axios/Axios";
+import toast from "react-hot-toast";
+import { NoChatsFound } from "../components/NoChatsFound";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const navigate=useNavigate();
-  
+  const [users, setUsers] = useState([]);
+  const [load, setLoad] = useState(false);
+  const navigate = useNavigate();
+  const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
+  const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
+
+  useEffect(() => {
+    setLoad(true);
+    axiosReq
+      .post("/chat/get-chats", { sender_id: sender_id })
+      .then((res) => {
+        console.log(res.data);
+        setUsers((prevUsers) => [...prevUsers, ...res.data.users]);
+        // setTotal(res.data.total);
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err?.response?.data?.message);
+      })
+      .finally(() => {
+        setLoad(false);
+      });
+  }, []);
   return (
     <Box className={styles.dashboardContainer}>
       {/* Sidebar with static content */}
@@ -77,7 +58,7 @@ export default function Dashboard() {
         <Box className={styles.sidebarHeader}>
           <DashboardIcon className={styles.headerIcon} />
           <Typography variant="h4" className={styles.welcome}>
-            Welcome Back, User!
+            Welcome Back, {username}!
           </Typography>
         </Box>
         <Typography variant="body1" className={styles.description}>
@@ -118,29 +99,54 @@ export default function Dashboard() {
             Chats
           </Typography>
         </Box>
-        <List className={styles.list}>
-          {users.map((user) => (
-            <ListItem
-              key={user.id}
-              className={`${styles.listItem} ${
-                selectedUser?.id === user.id ? styles.selected : ""
-              }`}
-              onClick={() => {
-                navigate(`/chat/${user.id}`)
-                setSelectedUser(user)}}
-            >
-              <ListItemAvatar>
-                <Avatar src={user.avatar} className={styles.avatar} />
-              </ListItemAvatar>
-              <ListItemText primary={user.name} secondary={user.description} />
-              <ChevronRightIcon className={styles.chevronIcon} />
-            </ListItem>
-          ))}
-        </List>
+        {load?<Box className={styles.center}><CircularProgress size={30}/></Box>:<List className={styles.list}>
+          {users?.length === 0 ? (
+            <NoChatsFound />
+          ) : (
+            users.map((user) => (
+              <ListItem
+                key={user.id}
+                className={`${styles.listItem} ${
+                  selectedUser?.id === user.id ? styles.selected : ""
+                }`}
+                onClick={() => {
+                  navigate(
+                    `/chat/${
+                      user.sender._id === sender_id
+                        ? user.receiver?._id
+                        : user.sender?._id
+                    }`,
+                    {
+                      state: {
+                        userDetails:
+                          user.sender._id === sender_id
+                            ? user.receiver
+                            : user.sender,
+                      },
+                    }
+                  );
+                  setSelectedUser(user);
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar src={user.avatar} className={styles.avatar} />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    user.sender._id === sender_id
+                      ? user.receiver?.username
+                      : user.sender?.username
+                  }
+                  secondary={user?.sortedComments?.message}
+                />
+                <ChevronRightIcon className={styles.chevronIcon} />
+              </ListItem>
+            ))
+          )}
+        </List>}
       </Box>
- 
-     <ExploreUsersModal open={open} setOpen={setOpen}/>
-   
+
+      <ExploreUsersModal open={open} setOpen={setOpen} />
     </Box>
   );
 }
