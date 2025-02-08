@@ -8,16 +8,17 @@ import {
   Avatar,
   Typography,
   Button,
-  Modal,
+
 } from "@mui/material";
 import ExploreIcon from "@mui/icons-material/Explore";
-import CloseIcon from "@mui/icons-material/Close";
+
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import PeopleIcon from "@mui/icons-material/People";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import styles from "../styles/Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
+import { ExploreUsersModal } from "../components/ExploreUsersModal";
 
 const users = [
   {
@@ -137,42 +138,9 @@ export default function Dashboard() {
           ))}
         </List>
       </Box>
-
-      {/* Modal for exploring people */}
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        className={styles.modal}
-      >
-        <Box className={styles.modalContent}>
-          <Typography variant="h6" className={styles.modalHeader}>
-            Explore People
-          </Typography>
-          <List className={styles.list}>
-            {users.map((user) => (
-              <ListItem key={user.id} className={styles.listItem}>
-                <ListItemAvatar>
-                  <Avatar src={user.avatar} className={styles.avatar} />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={user.name}
-                  secondary={user.description}
-                />
-                <ChevronRightIcon className={styles.chevronIcon} />
-              </ListItem>
-            ))}
-          </List>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => setOpen(false)}
-            className={styles.closeButton}
-            startIcon={<CloseIcon />}
-          >
-            Close
-          </Button>
-        </Box>
-      </Modal>
+ 
+     <ExploreUsersModal open={open} setOpen={setOpen}/>
+   
     </Box>
   );
 }

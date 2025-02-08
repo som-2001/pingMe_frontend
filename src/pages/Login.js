@@ -5,6 +5,7 @@ import {
   Button,
   Typography,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -33,7 +34,7 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema), 
+    resolver: yupResolver(schema),
   });
 
   const [load, setLoad] = useState(false);
@@ -135,8 +136,13 @@ const Login = () => {
             />
           </div>
 
-          <Button type="submit" variant="contained" className={styles.button}>
-            Continue
+          <Button
+            type="submit"
+            disabled={load}
+            variant="contained"
+            className={styles.button}
+          >
+            {load ? <CircularProgress size={25} color="white" /> : "Continue"}
           </Button>
           <p className={styles.p}>
             New User? register{" "}
