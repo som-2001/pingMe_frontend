@@ -1,0 +1,53 @@
+.homepageContainer {
+  height: 100vh;
+  background: linear-gradient(to right, #56ccf2, #2f80ed);
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.logo {
+  flex-grow: 1;
+  font-weight: bold;
+}
+
+.loginButton {
+  background: white !important;
+  padding: 10px !important;
+  color: black !important;
+  width: 100px !important;
+  border-radius: 30px !important;
+  transition: background-color 0.3s ease-in-out !important;
+}
+
+.loginButton:hover {
+  background-color: black !important;
+  color: white !important;
+}
+
+.heroSection {
+  height: 63vh;
+  text-align: center;
+  margin-top: 8vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.getStartedButton {
+  background: white !important;
+  padding: 18px !important;
+  color: black !important;
+  border-radius: 50px !important;
+  transition: background-color 0.3s ease-in-out !important;
+}
+
+.getStartedButton:hover {
+  background-color: #050606 !important;
+  color: white !important;
+}

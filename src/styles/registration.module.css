@@ -1,0 +1,102 @@
+.container {
+  display: flex !important;
+  height: 100vh !important;
+}
+
+.toaster{
+    position: fixed;
+    bottom: 10px;
+    right: 10px
+}
+.leftPanel {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background: linear-gradient(to bottom, #9ddaef, #0c4ca0) !important;
+  width: 50% !important;
+  color: white !important;
+  text-align: center !important;
+  padding: 2rem !important;
+}
+
+.logo {
+  font-size: 2rem !important;
+  font-weight: bold !important;
+}
+
+.description {
+  margin-top: 1rem !important;
+  font-size: 1.2rem !important;
+}
+
+.coffeeIcon {
+  margin-top: 1.5rem !important;
+  width: 50px !important;
+  height: 50px !important;
+  /* background: url("/path-to-coffee-icon.png") no-repeat center; */
+  background-size: contain !important;
+}
+
+.enjoyText {
+  margin-top: 1rem !important;
+  font-size: 1.5rem !important;
+}
+
+.formContainer {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 50% !important;
+  padding: 2rem !important;
+}
+
+.form {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-top: 1.5rem !important;
+}
+
+.title {
+  font-size: 2rem !important;
+  margin-bottom: 0.2rem !important;
+  color: #5a74d4 !important;
+}
+
+.inputContainer {
+  display: flex !important;
+  align-items: center !important;
+  margin-top: 0.1rem !important;
+  margin-bottom: 0.8rem !important;
+  width: 100% !important;
+}
+
+.icon {
+  margin-right: 10px;
+  color: gray;
+}
+
+.button {
+  margin-top: 1rem !important;
+  background: linear-gradient(to right, #56ccf2, #2f80ed);
+  color: white !important;
+  width: 50% !important;
+  padding: 1rem !important;
+  border-radius: 30px !important;
+}
+
+.textField {
+  width: 320px !important;
+  border-radius: 30px !important;
+}
+.p{
+    color: rgba(122, 122, 122, 0.858);
+
+}
+.span{
+    color: #2f80ed;
+    cursor: pointer;
+}
