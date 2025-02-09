@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   TextField,
@@ -7,6 +7,8 @@ import {
   Typography,
   Avatar,
   CircularProgress,
+  Button,
+  Grid,
 } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
@@ -20,6 +22,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
+import ScrollToBottom from "react-scroll-to-bottom";
 
 const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
   reconnection: true,
@@ -39,6 +42,9 @@ export const Chat = () => {
   const [load, setLoad] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+
+  const messagesEndRef = useRef(null);
+
   //loads messages
   useEffect(() => {
     setLoad(true);
@@ -49,8 +55,8 @@ export const Chat = () => {
         receiver_id: id,
       })
       .then((res) => {
-        setMessages((prevMessages) => [...prevMessages, ...res.data.messages]);
-        setTotal(res.data.totalMessages);
+        setMessages((prevMessages) => [...res.data.messages, ...prevMessages]);
+        setTotal(res.data.totalPages);
       })
       .catch((err) => {
         console.error(err);
@@ -59,18 +65,21 @@ export const Chat = () => {
       .finally(() => {
         setLoad(false);
       });
-  }, []);
+  }, [page]);
 
-  //connect to the room
   useEffect(() => {
     const room = `room_${id}`;
     socket.emit("room_join", {
       room: room,
       sender_id: sender_id,
       username: username,
-      receiver_id:id
+      receiver_id: id,
     });
   }, [id]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   // Opens the attachment popover
   const handleAttachClick = (event) => {
@@ -84,8 +93,8 @@ export const Chat = () => {
 
   useEffect(() => {
     const handleMessage = (data) => {
-      setMessages([
-        ...messages,
+      setMessages((prevMessages) => [
+        ...prevMessages,
         {
           message: data.message,
           sender_id: data.sender_id,
@@ -99,7 +108,7 @@ export const Chat = () => {
     return () => {
       socket.off("message", handleMessage);
     };
-  }, [messages]);
+  }, []);
 
   // Sends a message if not empty
   const handleSendMessage = () => {
@@ -131,66 +140,137 @@ export const Chat = () => {
   const popoverId = open ? "attachment-popover" : undefined;
 
   return (
-    <Box className={styles.chatContainer}>
-      {/* Header with user avatar and name */}
-      <Box className={styles.header} onClick={() => setHeaderModalOpen(true)}>
-        <Avatar
-          src={location?.state?.userDetails?.avatar}
-          className={styles.headerAvatar}
-        />
-        <Typography variant="h6" className={styles.headerName}>
-          {location?.state?.userDetails?.username}
-        </Typography>
-      </Box>
+    <Grid container spacing={1}>
+      <Grid
+        item
+        xs={12}
+        md={5}
+        sx={{display:{xs:"none",md:"block"}}}
+        className={styles.userDetailsContainer} // Apply CSS class
+      >
+        {/* User Image & Banner */}
+        <Box className={styles.bannerContainer}>
+          <Box className={styles.banner} />
+          <Avatar
+            src="https://via.placeholder.com/100"
+            alt="User Name"
+            className={styles.profileImage}
+          />
+        </Box>
 
-      {/* Chat messages display */}
-      <Box className={styles.messagesContainer}>
-        {load ? (
-          <Box>
-            <CircularProgress size={30} className={styles.reload} />
-          </Box>
-        ) : messages.length === 0 ? (
-          <Typography variant="body2" className={styles.noMessages}>
-            No messages yet. Start the conversation!
+        {/* User Info */}
+        <Box className={styles.userInfo}>
+          <Typography variant="h6" className={styles.userName}>
+            John Doe
           </Typography>
-        ) : (
-          messages.map((msg, index) => (
-            msg.sender_id===sender_id?
-            <Box key={index} className={styles.RightmessageBubble}>
-              <Typography variant="body1" >{msg.message}</Typography>
-           
-            </Box>
-            : <Box key={index} className={styles.LeftmessageBubble}>
-            <Typography variant="body1" >{msg.message}</Typography>
+          <Typography variant="body2" className={styles.userTitle}>
+            Senior Software Engineer at XYZ
+          </Typography>
+        </Box>
 
+        {/* About Me Section */}
+        <Box className={styles.section}>
+          <Typography variant="body1" className={styles.sectionTitle}>
+            About Me:
+          </Typography>
+          <Typography variant="body2" className={styles.sectionText}>
+            Passionate about technology and solving complex problems.
+          </Typography>
+        </Box>
+
+        {/* Contact Section */}
+        <Box className={styles.section}>
+          <Typography variant="body1" className={styles.sectionTitle}>
+            Contact:
+          </Typography>
+          <Typography variant="body2" className={styles.sectionText}>
+            📧 john.doe@example.com
+          </Typography>
+          <Typography variant="body2" className={styles.sectionText}>
+            📍 San Francisco, CA
+          </Typography>
+        </Box>
+      </Grid>
+
+      <Grid item xs={12} sm={12} md={8} lg={7}>
+        <Box className={styles.chatContainer}>
+          <Box
+            className={styles.header}
+            onClick={() => setHeaderModalOpen(true)}
+          >
+            <Avatar
+              src={location?.state?.userDetails?.avatar}
+              className={styles.headerAvatar}
+            />
+            <Typography variant="h6" className={styles.headerName}>
+              {location?.state?.userDetails?.username}
+            </Typography>
           </Box>
-          ))
-        )}
-      </Box>
+          <ScrollToBottom className={styles.messagesContainer} behavior="auto">
+            <center>
+              <Box sx={{ backgroundColor: "transparent" }}>
+                <Box>{load && <CircularProgress />}</Box>
+                {page !== total && !load && (
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      setLoad(true);
+                      setPage((prev) => prev + 1);
+                    }}
+                    className={styles.loadMore}
+                  >
+                    Load More
+                  </Button>
+                )}
+              </Box>
+            </center>
 
-      {/* Input area with text field, attachment & send buttons */}
-      <Box className={styles.inputContainer}>
-        <IconButton onClick={handleAttachClick}>
-          <AttachFileIcon />
-        </IconButton>
-        <TextField
-          variant="outlined"
-          placeholder="Type a message"
-          fullWidth
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              handleSendMessage();
-            }
-          }}
-        />
-        <IconButton onClick={handleSendMessage}>
-          <SendIcon />
-        </IconButton>
-      </Box>
+            {load ? (
+              <Box>
+                <CircularProgress size={30} className={styles.reload} />
+              </Box>
+            ) : messages.length === 0 ? (
+              <Typography variant="body2" className={styles.noMessages}>
+                No messages yet. Start the conversation!
+              </Typography>
+            ) : (
+              messages.map((msg, index) =>
+                msg.sender_id === sender_id ? (
+                  <Box key={index} className={styles.RightmessageBubble}>
+                    <Typography variant="body1">{msg.message}</Typography>
+                  </Box>
+                ) : (
+                  <Box key={index} className={styles.LeftmessageBubble}>
+                    <Typography variant="body1">{msg.message}</Typography>
+                  </Box>
+                )
+              )
+            )}
+          </ScrollToBottom>
 
-      {/* Attachment options popover */}
+          <Box className={styles.inputContainer}>
+            <IconButton onClick={handleAttachClick}>
+              <AttachFileIcon />
+            </IconButton>
+            <TextField
+              variant="outlined"
+              placeholder="Type a message"
+              fullWidth
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                }
+              }}
+            />
+            <IconButton onClick={handleSendMessage}>
+              <SendIcon />
+            </IconButton>
+          </Box>
+        </Box>
+      </Grid>
+
       <Popover
         id={popoverId}
         open={open}
@@ -222,6 +302,6 @@ export const Chat = () => {
           user={location?.state?.userDetails}
         />
       )}
-    </Box>
+    </Grid>
   );
 };

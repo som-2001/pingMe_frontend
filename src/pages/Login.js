@@ -48,14 +48,13 @@ const Login = () => {
       .post("/auth/login", data)
       .then((res) => {
         console.log(res.data);
-        Cookies.set("accessToken", res.data.accessToken);
-        Cookies.set("refreshToken", res.data.refreshToken);
+        Cookies.set("accessToken", res.data.accessToken, { expires: 1 / 24 });
+        Cookies.set("refreshToken", res.data.refreshToken, { expires: 24 });
         toast.success(res.data.message);
-        
+
         setTimeout(() => {
           navigate("/dashboard");
         }, 1000);
-       
       })
       .catch((err) => {
         console.log(err);
