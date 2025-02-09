@@ -24,6 +24,14 @@ import Cookies from "js-cookie";
 import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
 import { NoChatsFound } from "../components/NoChatsFound";
+import { io } from "socket.io-client";
+
+const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 5000,
+});
+
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -33,6 +41,16 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
   const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
+
+
+    useEffect(() => {
+      const room = `room_${sender_id}`;
+      socket.emit("room_join", {
+        room: room,
+        sender_id: sender_id,
+        username: username,
+      });
+    }, [sender_id,username]);
 
   useEffect(() => {
     setLoad(true);

@@ -111,7 +111,7 @@ export const Chat = () => {
   }, []);
 
   // Sends a message if not empty
-  const handleSendMessage = () => {
+  const handleSendMessage = async() => {
     if (message.trim() !== "") {
       const room = `room_${id}`;
       socket.emit("message", {
@@ -119,6 +119,12 @@ export const Chat = () => {
         receiver_id: id,
         message: message,
         room: room,
+      });
+
+      await axiosReq.post("/chat/send-message", {
+        senderId:sender_id,
+        receiverId:id,
+        message:message,
       });
       setMessage("");
     }

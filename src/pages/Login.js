@@ -17,6 +17,9 @@ import { useNavigate } from "react-router-dom";
 import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
+import { requestNotificationPermission } from "../firebase";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const schema = yup.object().shape({
   password: yup
@@ -46,11 +49,21 @@ const Login = () => {
     setLoad(true);
     axiosReq
       .post("/auth/login", data)
-      .then((res) => {
+      .then(async (res) => {
         console.log(res.data);
         Cookies.set("accessToken", res.data.accessToken, { expires: 1 / 24 });
         Cookies.set("refreshToken", res.data.refreshToken, { expires: 24 });
         toast.success(res.data.message);
+        const id=jwtDecode(Cookies?.get("refreshToken"))?.userId
+        const fcmToken = await requestNotificationPermission();
+        console.log(fcmToken);
+        if (fcmToken) {
+          // Send FCM token to backend
+          await axiosReq.post("/users/update-fcm-token", {
+            userId:id,
+            token: fcmToken,
+          });
+        }
 
         setTimeout(() => {
           navigate("/dashboard");
