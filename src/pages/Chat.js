@@ -24,7 +24,7 @@ import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
 import dayjs from "dayjs";
-import { HandleImageClick } from "../utils/functions";
+
 
 const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
   reconnection: true,
@@ -172,6 +172,8 @@ export const Chat = () => {
         senderId: sender_id,
         receiverId: id,
         message: message,
+        username: username,
+        profileImg: profileImg
       });
       setMessage("");
     }

@@ -35,9 +35,15 @@ if (self.firebase) {
     const notificationTitle = payload.notification?.title || "New Notification";
     const notificationOptions = {
       body: payload.notification?.body || "You have a new message.",
-      icon: "/icon.png", // Replace with your actual icon
+      icon: "/favicon.ico", // Your website's icon (small)
+      image: payload.data?.profileImg || "/default-user.png", // User's profile image (large)
+      data: {
+        url: payload.data?.url || "/",
+        username: payload.data?.username || "Unknown",
+        profileImg: payload.data?.profileImg || "/default-user.png",
+      },
     };
-
+    
     self.registration.showNotification(notificationTitle, notificationOptions);
   });
 } else {
