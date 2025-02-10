@@ -1,8 +1,14 @@
-import { Box, IconButton, Modal, Typography } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-
+import { Box, Button, IconButton, Modal, Typography } from "@mui/material";
 import styles from "../styles/Chat.module.css";
-export const UserDetailsModal = ({ headerModalOpen, setHeaderModalOpen,user }) => {
+
+export const UserDetailsModal = ({
+  headerModalOpen,
+  setHeaderModalOpen,
+  profileImage,
+  username,
+  description,
+  about,
+}) => {
   return (
     <Modal
       open={headerModalOpen}
@@ -10,19 +16,19 @@ export const UserDetailsModal = ({ headerModalOpen, setHeaderModalOpen,user }) =
       className={styles.headerModal}
     >
       <Box className={styles.headerModalContent}>
-        <img src={user?.banner} alt="Banner" className={styles.bannerImage} />
-        <Typography variant="h5" className={styles.modalName}>
-          {user?.username}
+        <img src={profileImage} alt="Banner" className={styles.bannerImage} />
+        <Typography variant="body1" className={styles.modalName}>
+          {username}
         </Typography>
-        <Typography variant="body1" className={styles.modalAbout}>
-          {user?.description}
+        <Typography variant="body2" className={styles.modalName}>
+          {about}
         </Typography>
-        <IconButton
-          onClick={() => setHeaderModalOpen(false)}
-          className={styles.modalCloseButton}
-        >
-          <CloseIcon />
-        </IconButton>
+        <Typography variant="body2" className={styles.modalAbout}>
+          {description}
+        </Typography>
+        <span onClick={() => setHeaderModalOpen(false)}>
+          <Button className={styles.btn}>Close</Button>
+        </span>
       </Box>
     </Modal>
   );

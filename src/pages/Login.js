@@ -18,7 +18,6 @@ import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { requestNotificationPermission } from "../firebase";
-import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const schema = yup.object().shape({

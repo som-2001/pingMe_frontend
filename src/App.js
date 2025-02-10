@@ -11,13 +11,14 @@ import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { axiosReq } from "./axios/Axios";
+import { Profile } from "./pages/Profile";
 
 function App() {
-  const refreshToken = Cookies?.get("refreshToken"); // Get token from cookies
-  const sender_id = refreshToken ? jwtDecode(refreshToken)?.userId : null; // Decode only if token exists
+  const refreshToken = Cookies?.get("refreshToken"); 
+  const sender_id = refreshToken ? jwtDecode(refreshToken)?.userId : null;
 
   useEffect(() => {
-    if (!sender_id) return; // Exit if user is not logged in
+    if (!sender_id) return; 
 
     requestNotificationPermission().then((token) => {
       if (token) {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<RegistrationForm />} />
           <Route path="/signin" element={<Login />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/chat/:id" element={<Chat />} />
         </Routes>

@@ -9,12 +9,13 @@ import {
   Typography,
   Button,
   CircularProgress,
+  Grid,
 } from "@mui/material";
 import ExploreIcon from "@mui/icons-material/Explore";
 
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
-import PeopleIcon from "@mui/icons-material/People";
+import ForumIcon from "@mui/icons-material/Forum";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import styles from "../styles/Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
@@ -25,13 +26,15 @@ import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
 import { NoChatsFound } from "../components/NoChatsFound";
 import { io } from "socket.io-client";
+import dayjs from "dayjs";
+var relativeTime = require("dayjs/plugin/relativeTime");
+dayjs.extend(relativeTime);
 
 const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 5000,
 });
-
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
@@ -42,15 +45,14 @@ export default function Dashboard() {
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
   const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
 
-
-    useEffect(() => {
-      const room = `room_${sender_id}`;
-      socket.emit("room_join", {
-        room: room,
-        sender_id: sender_id,
-        username: username,
-      });
-    }, [sender_id,username]);
+  useEffect(() => {
+    const room = `room_${sender_id}`;
+    socket.emit("room_join", {
+      room: room,
+      sender_id: sender_id,
+      username: username,
+    });
+  }, [sender_id, username]);
 
   useEffect(() => {
     setLoad(true);
@@ -68,11 +70,13 @@ export default function Dashboard() {
       .finally(() => {
         setLoad(false);
       });
-  }, []);
+  }, [sender_id]);
   return (
     <Box className={styles.dashboardContainer}>
-      {/* Sidebar with static content */}
-      <Box className={styles.sidebar}>
+      <Box
+        className={styles.sidebar}
+        sx={{ height: { xs: "60vh", md: "90vh" } }}
+      >
         <Box className={styles.sidebarHeader}>
           <DashboardIcon className={styles.headerIcon} />
           <Typography variant="h4" className={styles.welcome}>
@@ -107,61 +111,97 @@ export default function Dashboard() {
         >
           Explore Now
         </Button>
+
+        <Box>
+          <Typography variant="h5" sx={{ my: 3 }} color="text.secondary">
+            Here are some shortcuts
+          </Typography>
+          <Box className={styles.ShortcutBox}>
+            <Grid container>
+              <Grid item xs={2} className={styles.centerIcon}>
+                <AccountCircleIcon sx={{ fontSize: "2.2rem" }} />
+              </Grid>
+              <Grid item xs={10} onClick={(e) => navigate("/profile")}>
+                <Typography variant="body1">Go To Profile</Typography>
+                <Typography variant="body2">
+                  In profile you can update your profile image, descriptions,
+                  about and other stuffs.
+                </Typography>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
       </Box>
 
       {/* Main content with People List */}
-      <Box className={styles.mainContent}>
+      <Box
+        className={styles.mainContent}
+        sx={{ height: { xs: "60vh", md: "90vh" } }}
+      >
         <Box className={styles.mainHeaderContainer}>
-          <PeopleIcon className={styles.mainIcon} />
+          <ForumIcon className={styles.mainIcon} />
           <Typography variant="h5" className={styles.header}>
-            Chats
+            Messages
           </Typography>
         </Box>
-        {load?<Box className={styles.center}><CircularProgress size={30}/></Box>:<List className={styles.list}>
-          {users?.length === 0 ? (
-            <NoChatsFound />
-          ) : (
-            users.map((user) => (
-              <ListItem
-                key={user.id}
-                className={`${styles.listItem} ${
-                  selectedUser?.id === user.id ? styles.selected : ""
-                }`}
-                onClick={() => {
-                  navigate(
-                    `/chat/${
-                      user.sender._id === sender_id
-                        ? user.receiver?._id
-                        : user.sender?._id
-                    }`,
-                    {
-                      state: {
-                        userDetails:
-                          user.sender._id === sender_id
-                            ? user.receiver
-                            : user.sender,
-                      },
+        {load ? (
+          <Box className={styles.center}>
+            <CircularProgress size={30} />
+          </Box>
+        ) : (
+          <List className={styles.list}>
+            {users?.length === 0 ? (
+              <NoChatsFound />
+            ) : (
+              users.map((user) => (
+                <ListItem
+                  key={user.id}
+                  className={`${styles.listItem} ${
+                    selectedUser?.id === user.id ? styles.selected : ""
+                  }`}
+                  onClick={() => {
+                    navigate(
+                      `/chat/${
+                        user.sender._id === sender_id
+                          ? user.receiver?._id
+                          : user.sender?._id
+                      }`,
+                      {
+                        state: {
+                          userDetails:
+                            user.sender._id === sender_id
+                              ? user.receiver
+                              : user.sender,
+                        },
+                      }
+                    );
+                    setSelectedUser(user);
+                  }}
+                >
+                  <ListItemAvatar>
+                    <Avatar src={user.sender._id === sender_id
+                          ? user.receiver?.profileImage
+                          : user.sender?.profileImage} className={styles.avatar} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    sx={{ padding: "10px" }}
+                    primary={
+                      <span className={styles.flexContainer}>
+                        {user.sender._id === sender_id
+                          ? user.receiver?.username
+                          : user.sender?.username}
+                        <Typography variant="body2">
+                          {dayjs(user.createdAt).fromNow(true)} ago
+                        </Typography>
+                      </span>
                     }
-                  );
-                  setSelectedUser(user);
-                }}
-              >
-                <ListItemAvatar>
-                  <Avatar src={user.avatar} className={styles.avatar} />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={
-                    user.sender._id === sender_id
-                      ? user.receiver?.username
-                      : user.sender?.username
-                  }
-                  secondary={user?.sortedComments?.message}
-                />
-                <ChevronRightIcon className={styles.chevronIcon} />
-              </ListItem>
-            ))
-          )}
-        </List>}
+                    secondary={user?.sortedComments?.message}
+                  />
+                </ListItem>
+              ))
+            )}
+          </List>
+        )}
       </Box>
 
       <ExploreUsersModal open={open} setOpen={setOpen} />

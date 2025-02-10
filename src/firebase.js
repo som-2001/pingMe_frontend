@@ -21,7 +21,7 @@ if ("serviceWorker" in navigator && "PushManager" in window) {
   console.warn("🚨 Firebase Messaging is not supported on this browser.");
 }
 
-// Request permission for notifications
+
 export const requestNotificationPermission = async () => {
   if (!messaging) return null;
   try {
@@ -35,17 +35,16 @@ export const requestNotificationPermission = async () => {
   }
 };
 
-// 🔥 Handle foreground notifications
 onMessage(messaging, (payload) => {
   console.log("📩 Foreground Notification:", payload);
 
   const { title, body } = payload.notification;
 
-  // Show browser notification
+  
   new Notification(title, {
     body,
-    icon: "/icon.png", // Change to your app icon
+    icon: "/icon.png", 
   });
 
-  // Optional: You can also update the UI (e.g., show a toast notification)
+  
 });

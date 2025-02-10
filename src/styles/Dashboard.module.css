@@ -72,7 +72,11 @@
   margin-bottom: 8px;
   color: #666;
 }
-
+.flexContainer{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 /* Main Content Styling */
 .mainContent {
   flex: 2;
@@ -83,6 +87,23 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.centerIcon{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.ShortcutBox{
+  background-color: whitesmoke;
+  padding: 14px;
+  border-radius: 13px;
+  transition: background 0.5s ease;
+  cursor: pointer;
+}
+.ShortcutBox:hover{
+  background: rgb(102, 101, 101);
+  color: white;
 }
 
 .mainHeaderContainer {
