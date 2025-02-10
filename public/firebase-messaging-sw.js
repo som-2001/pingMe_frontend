@@ -35,8 +35,7 @@ if (self.firebase) {
     const notificationTitle = payload.notification?.title || "New Notification";
     const notificationOptions = {
       body: payload.notification?.body || "You have a new message.",
-      icon: "/favicon.ico", // Your website's icon (small)
-      image: payload.data?.profileImg || "/default-user.png", // User's profile image (large)
+      icon: payload.data?.profileImg,
       data: {
         url: payload.data?.url || "/",
         username: payload.data?.username || "Unknown",
