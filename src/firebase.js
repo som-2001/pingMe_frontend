@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getMessaging, getToken } from "firebase/messaging";
 
 // Firebase config
 const firebaseConfig = {
@@ -21,12 +21,12 @@ if ("serviceWorker" in navigator && "PushManager" in window) {
   console.warn("🚨 Firebase Messaging is not supported on this browser.");
 }
 
-
 export const requestNotificationPermission = async () => {
   if (!messaging) return null;
   try {
     const token = await getToken(messaging, {
-      vapidKey: "BHWpJTjY9zui56PdnGkYh5qOk28wcYdxH0iipBYK3XzWKF3iCC1n4zhcKJNeZqk5op1CAEr9p164jp2LPNXHHwU",
+      vapidKey:
+        "BHWpJTjY9zui56PdnGkYh5qOk28wcYdxH0iipBYK3XzWKF3iCC1n4zhcKJNeZqk5op1CAEr9p164jp2LPNXHHwU",
     });
     console.log("✅ FCM Token:", token);
     return token;
@@ -34,17 +34,3 @@ export const requestNotificationPermission = async () => {
     console.error("❌ Error getting FCM token:", error);
   }
 };
-
-onMessage(messaging, (payload) => {
-  console.log("📩 Foreground Notification:", payload);
-
-  const { title, body } = payload.notification;
-
-  
-  new Notification(title, {
-    body,
-    icon: "/icon.png", 
-  });
-
-  
-});

@@ -54,6 +54,8 @@ export const Chat = () => {
   const messagesEndRef = useRef(null);
 
   //loads messages
+
+  
   useEffect(() => {
     setLoad(true);
     axiosReq
