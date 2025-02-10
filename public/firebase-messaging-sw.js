@@ -45,6 +45,25 @@ if (self.firebase) {
     
     self.registration.showNotification(notificationTitle, notificationOptions);
   });
+
+  self.addEventListener("notificationclick", (event) => {
+    console.log("🔔 Notification Clicked:", event.notification.data);
+  
+    const url = event.notification.data?.url || "/"; // Default to home if no URL
+    event.notification.close();
+  
+    event.waitUntil(
+      clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+        for (const client of clientList) {
+          if (client.url === url && "focus" in client) {
+            return client.focus();
+          }
+        }
+        if (clients.openWindow) return clients.openWindow(url);
+      })
+    );
+  });
+  
 } else {
   console.error("❌ Firebase SDK failed to load in service worker.");
 }
