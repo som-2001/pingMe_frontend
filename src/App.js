@@ -26,58 +26,7 @@ function App() {
     });
   }, [sender_id]); // Depend on sender_id
 
-  useEffect(() => {
-    if (!sender_id) return;
-  
-    let timer;
-    let wasOffline = false;
-  
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        timer = setTimeout(() => {
-          console.log("User inactive for 1 minute, setting offline");
-          axiosReq.put("/user/status", {
-            sender_id: sender_id,
-            status: "offline",
-          });
-          wasOffline = true;
-        }, 60000); // 1-minute delay
-      } else {
-        if (timer) {
-          clearTimeout(timer);
-          console.log("User returned within 1 min, not setting offline");
-        }
-        if (wasOffline) {
-          axiosReq.put("/user/status", {
-            sender_id: sender_id,
-            status: "online",
-          });
-          wasOffline = false;
-        }
-      }
-    };
-  
-    const handleFocus = () => {
-      if (wasOffline) {
-        axiosReq.put("/user/status", {
-          sender_id: sender_id,
-          status: "online",
-        });
-        wasOffline = false;
-      }
-    };
-  
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("focus", handleFocus);
-    window.addEventListener("blur", handleVisibilityChange);
-  
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("blur", handleVisibilityChange);
-    };
-  }, [sender_id]);
+
   
 
   return (
