@@ -28,46 +28,57 @@ function App() {
 
   useEffect(() => {
     if (!sender_id) return;
-
+  
     let timer;
-    let wasOffline = false; // Track if the user actually went offline
-
+    let wasOffline = false;
+  
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        // Start a timeout when the user leaves
         timer = setTimeout(() => {
-          console.log("User has been inactive for 1 minute, setting offline");
+          console.log("User inactive for 1 minute, setting offline");
           axiosReq.put("/user/status", {
             sender_id: sender_id,
             status: "offline",
           });
-          wasOffline = true; // Mark user as offline
+          wasOffline = true;
         }, 60000); // 1-minute delay
       } else {
-        // User returned before 1 minute, clear the timeout
         if (timer) {
           clearTimeout(timer);
           console.log("User returned within 1 min, not setting offline");
         }
-
-        // Only send "online" request if the user was marked offline
         if (wasOffline) {
           axiosReq.put("/user/status", {
             sender_id: sender_id,
             status: "online",
           });
-          wasOffline = false; // Reset flag
+          wasOffline = false;
         }
       }
     };
-
+  
+    const handleFocus = () => {
+      if (wasOffline) {
+        axiosReq.put("/user/status", {
+          sender_id: sender_id,
+          status: "online",
+        });
+        wasOffline = false;
+      }
+    };
+  
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleVisibilityChange);
+  
     return () => {
-      clearTimeout(timer); // Cleanup on unmount
+      clearTimeout(timer);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleVisibilityChange);
     };
   }, [sender_id]);
+  
 
   return (
     <>
