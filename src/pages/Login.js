@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   TextField,
@@ -25,10 +25,7 @@ const schema = yup.object().shape({
     .string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
-  email: yup
-    .string()
-    .email("Invalid email")
-    .required("Email is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
 });
 
 const Login = () => {
@@ -42,6 +39,15 @@ const Login = () => {
 
   const [load, setLoad] = useState(false);
 
+  useEffect(() => {
+    let token = Cookies.get("refreshToken");
+    if (token) {
+      navigate("/dashboard");
+    }else{
+      navigate("/signin")
+    }
+  }, []);
+
   const navigate = useNavigate();
 
   const onSubmit = (data) => {
@@ -53,13 +59,13 @@ const Login = () => {
         Cookies.set("accessToken", res.data.accessToken, { expires: 1 / 24 });
         Cookies.set("refreshToken", res.data.refreshToken, { expires: 24 });
         toast.success(res.data.message);
-        const id=jwtDecode(Cookies?.get("refreshToken"))?.userId
+        const id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
         const fcmToken = await requestNotificationPermission();
         console.log(fcmToken);
         if (fcmToken) {
           // Send FCM token to backend
           await axiosReq.post("/users/update-fcm-token", {
-            userId:id,
+            userId: id,
             token: fcmToken,
           });
         }

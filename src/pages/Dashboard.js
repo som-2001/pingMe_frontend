@@ -27,6 +27,7 @@ import toast from "react-hot-toast";
 import { NoChatsFound } from "../components/NoChatsFound";
 import { io } from "socket.io-client";
 import dayjs from "dayjs";
+import { StyledBadge } from "../components/StyleBadge";
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
 
@@ -47,8 +48,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     const room = `room_${sender_id}`;
-
-    axiosReq.put("/user/status",{sender_id:sender_id});
 
     socket.emit("room_join", {
       room: room,
@@ -182,14 +181,24 @@ export default function Dashboard() {
                   }}
                 >
                   <ListItemAvatar>
-                    <Avatar
-                      src={
+                    <StyledBadge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      variant={
                         user.sender._id === sender_id
-                          ? user.receiver?.profileImage
-                          : user.sender?.profileImage
+                          ? user.receiver?.status ==="online" ? "dot":""
+                          : user.sender?.status ==="online" ? "dot":""
                       }
-                      className={styles.avatar}
-                    />
+                    >
+                      <Avatar
+                        src={
+                          user.sender._id === sender_id
+                            ? user.receiver?.profileImage
+                            : user.sender?.profileImage
+                        }
+                        className={styles.avatar}
+                      />
+                    </StyledBadge>
                   </ListItemAvatar>
                   <ListItemText
                     sx={{ padding: "10px" }}

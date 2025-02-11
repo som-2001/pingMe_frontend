@@ -50,8 +50,9 @@ export const Chat = () => {
   const [address, setAddress] = useState("");
   const [profileImg, setProfileImg] = useState("");
   const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("");
   const [progress, setProgress] = useState(0);
-  const messageRef=useRef(null);
+  const messageRef = useRef(null);
 
   useEffect(() => {
     setLoad(true);
@@ -88,6 +89,7 @@ export const Chat = () => {
       .then((res) => {
         console.log(res.data);
         setUsername1(res?.data?.username);
+        setStatus(res?.data?.status);
         setAbout(
           res?.data?.about ||
             "Hi! I'm a passionate developer who loves coding and designing."
@@ -152,9 +154,8 @@ export const Chat = () => {
       }
     } catch (error) {
       console.error("Upload failed:", error);
-    }
-    finally{
-      setProgress(0)
+    } finally {
+      setProgress(0);
     }
   };
 
@@ -204,7 +205,7 @@ export const Chat = () => {
         profileImg: profileImg,
       });
       setMessage("");
-      messageRef.current.value="";
+      messageRef.current.value = "";
     }
   };
 
@@ -235,32 +236,40 @@ export const Chat = () => {
 
       <Grid item xs={12} sm={6} md={8} lg={8}>
         <Box className={styles.chatContainer}>
-          <Box className={styles.header}>
-            {progress>0 && (
-              <progress
-                value={progress}
-                max={100}
-                style={{
-                  position: "absolute",
-                  top: "10%",
-                  zIndex: 100,
-                  left: "60%",
-                }}
+          <Box>
+            <Box className={styles.header}>
+              {progress > 0 && (
+                <progress
+                  value={progress}
+                  max={100}
+                  style={{
+                    position: "absolute",
+                    top: "10%",
+                    zIndex: 100,
+                    left: "60%",
+                  }}
+                />
+              )}
+              <Avatar
+                src={profileImg}
+                className={styles.headerAvatar}
+                onClick={() => setHeaderModalOpen(true)}
               />
-            )}
-            <Avatar
-              src={profileImg}
-              className={styles.headerAvatar}
-              onClick={() => setHeaderModalOpen(true)}
-            />
-            <Typography
-              variant="h6"
-              className={styles.headerName}
-              onClick={() => setHeaderModalOpen(true)}
-            >
-              {username1}
-            </Typography>
+              <span>
+                <Typography
+                  variant="body1"
+                  className={styles.headerName}
+                  onClick={() => setHeaderModalOpen(true)}
+                >
+                  {username1}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{marginTop:'-4px'}}>
+                  {status}
+                </Typography>
+              </span>
+            </Box>
           </Box>
+
           <ScrollToBottom className={styles.messagesContainer} behavior="auto">
             <center>
               <Box sx={{ backgroundColor: "transparent" }}>
@@ -361,6 +370,7 @@ export const Chat = () => {
                   handleSendMessage();
                 }
               }}
+              autoComplete="off"
             />
             <IconButton
               onClick={handleSendMessage}

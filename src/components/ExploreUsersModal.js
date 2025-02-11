@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { StyledBadge } from "./StyleBadge";
 
 export const ExploreUsersModal = ({ open, setOpen }) => {
   const [load, setLoad] = useState(false);
@@ -26,7 +27,7 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
   const [total, setTotal] = useState(0);
   const [users, setUsers] = useState([]);
   const loadRef = useRef(null);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
 
   useEffect(() => {
@@ -89,13 +90,21 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
             <ListItem
               key={user.id}
               className={styles.listItem}
-              onClick={(e) => navigate(`/chat/${user._id}`,{state:{userDetails:user}})}
+              onClick={(e) =>
+                navigate(`/chat/${user._id}`, { state: { userDetails: user } })
+              }
             >
               <ListItemAvatar>
-                <Avatar src={user?.avatar} className={styles.avatar} />
+                <StyledBadge
+                  overlap="circular"
+                  anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                  variant={user?.status === "online" ? "dot" : ""}
+                >
+                  <Avatar src={user?.avatar} className={styles.avatar} />
+                </StyledBadge>
               </ListItemAvatar>
               <ListItemText
-                primary={sender_id===user?._id?"You":user?.username}
+                primary={sender_id === user?._id ? "You" : user?.username}
                 secondary={user?.description}
               />
               <ChevronRightIcon className={styles.chevronIcon} />
