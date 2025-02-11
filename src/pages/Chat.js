@@ -50,7 +50,7 @@ export const Chat = () => {
   const [address, setAddress] = useState("");
   const [profileImg, setProfileImg] = useState("");
   const [email, setEmail] = useState("");
-  const [progress,setProgress]=useState(0);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     setLoad(true);
@@ -131,6 +131,11 @@ export const Chat = () => {
     try {
       const response = await axiosReq.post("/chat/upload-images", formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (ProgressEvent) => {
+          setProgress(
+            Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total)
+          );
+        },
       });
 
       console.log(response.data);
@@ -146,6 +151,9 @@ export const Chat = () => {
       }
     } catch (error) {
       console.error("Upload failed:", error);
+    }
+    finally{
+      setProgress(0)
     }
   };
 
@@ -224,6 +232,18 @@ export const Chat = () => {
       <Grid item xs={12} sm={6} md={8} lg={8}>
         <Box className={styles.chatContainer}>
           <Box className={styles.header}>
+            {progress && (
+              <progress
+                value={progress}
+                max={100}
+                style={{
+                  position: "absolute",
+                  top: "10%",
+                  zIndex: 100,
+                  left: "60%",
+                }}
+              />
+            )}
             <Avatar
               src={profileImg}
               className={styles.headerAvatar}
