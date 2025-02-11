@@ -51,6 +51,7 @@ export const Chat = () => {
   const [profileImg, setProfileImg] = useState("");
   const [email, setEmail] = useState("");
   const [progress, setProgress] = useState(0);
+  const messageRef=useRef(null);
 
   useEffect(() => {
     setLoad(true);
@@ -203,6 +204,7 @@ export const Chat = () => {
         profileImg: profileImg,
       });
       setMessage("");
+      messageRef.current.value="";
     }
   };
 
@@ -227,12 +229,14 @@ export const Chat = () => {
         address={address}
         phone={phone}
         email={email}
+        receiverId={id}
+        senderId={sender_id}
       />
 
       <Grid item xs={12} sm={6} md={8} lg={8}>
         <Box className={styles.chatContainer}>
           <Box className={styles.header}>
-            {progress && (
+            {progress>0 && (
               <progress
                 value={progress}
                 max={100}
@@ -345,6 +349,7 @@ export const Chat = () => {
               placeholder="Type a message"
               fullWidth
               value={message}
+              ref={messageRef}
               onChange={(e) => setMessage(e.target.value)}
               InputProps={{
                 style: {

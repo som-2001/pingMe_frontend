@@ -47,6 +47,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     const room = `room_${sender_id}`;
+
+    axiosReq.put("/user/status",{sender_id:sender_id});
+
     socket.emit("room_join", {
       room: room,
       sender_id: sender_id,
@@ -75,7 +78,7 @@ export default function Dashboard() {
     <Box className={styles.dashboardContainer}>
       <Box
         className={styles.sidebar}
-        sx={{ height: {xs:"100vh",lg:"90vh" }}}
+        sx={{ height: { xs: "100vh", lg: "90vh" } }}
       >
         <Box className={styles.sidebarHeader}>
           <DashboardIcon className={styles.headerIcon} />
@@ -129,14 +132,14 @@ export default function Dashboard() {
                 </Typography>
               </Grid>
             </Grid>
-          </Box> 
-        </Box> 
-      </Box>      
+          </Box>
+        </Box>
+      </Box>
 
       {/* Main content with People List */}
       <Box
         className={styles.mainContent}
-        sx={{ height: {xs:"100vh",lg:"90vh" }}}
+        sx={{ height: { xs: "100vh", lg: "90vh" } }}
       >
         <Box className={styles.mainHeaderContainer}>
           <ForumIcon className={styles.mainIcon} />

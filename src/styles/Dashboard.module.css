@@ -183,6 +183,11 @@
   justify-content: center;
  
 }
+.centerButton{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .modalContent {
   background: white;

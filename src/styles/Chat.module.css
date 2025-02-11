@@ -44,6 +44,14 @@
   background: #f0f2f5;
 }
 
+.flexMediaButtons{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin:5px 0px 5px 0px;
+  width: 93%;
+  padding: 15px;
+}
 .noMessages {
   text-align: center;
   margin-top: 20px;
