@@ -75,7 +75,7 @@ export default function Dashboard() {
     <Box className={styles.dashboardContainer}>
       <Box
         className={styles.sidebar}
-        sx={{ height: { xs: "60vh", md: "90vh" } }}
+        sx={{ height: {xs:"100vh",lg:"90vh" }}}
       >
         <Box className={styles.sidebarHeader}>
           <DashboardIcon className={styles.headerIcon} />
@@ -129,14 +129,14 @@ export default function Dashboard() {
                 </Typography>
               </Grid>
             </Grid>
-          </Box>
-        </Box>
-      </Box>
+          </Box> 
+        </Box> 
+      </Box>      
 
       {/* Main content with People List */}
       <Box
         className={styles.mainContent}
-        sx={{ height: { xs: "60vh", md: "90vh" } }}
+        sx={{ height: {xs:"100vh",lg:"90vh" }}}
       >
         <Box className={styles.mainHeaderContainer}>
           <ForumIcon className={styles.mainIcon} />
@@ -179,9 +179,14 @@ export default function Dashboard() {
                   }}
                 >
                   <ListItemAvatar>
-                    <Avatar src={user.sender._id === sender_id
+                    <Avatar
+                      src={
+                        user.sender._id === sender_id
                           ? user.receiver?.profileImage
-                          : user.sender?.profileImage} className={styles.avatar} />
+                          : user.sender?.profileImage
+                      }
+                      className={styles.avatar}
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     sx={{ padding: "10px" }}
@@ -191,7 +196,8 @@ export default function Dashboard() {
                           ? user.receiver?.username
                           : user.sender?.username}
                         <Typography variant="body2">
-                          {dayjs(user.createdAt).fromNow(true)} ago
+                          {dayjs(user.sortedComments.createdAt).fromNow(true)}{" "}
+                          ago
                         </Typography>
                       </span>
                     }

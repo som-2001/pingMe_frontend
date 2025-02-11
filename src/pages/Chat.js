@@ -24,7 +24,7 @@ import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
 import dayjs from "dayjs";
-
+import { UserAboutGrid } from "../components/UserAboutGrid";
 
 const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
   reconnection: true,
@@ -50,12 +50,8 @@ export const Chat = () => {
   const [address, setAddress] = useState("");
   const [profileImg, setProfileImg] = useState("");
   const [email, setEmail] = useState("");
+  const [progress,setProgress]=useState(0);
 
-  const messagesEndRef = useRef(null);
-
-  //loads messages
-
-  
   useEffect(() => {
     setLoad(true);
     axiosReq
@@ -113,10 +109,6 @@ export const Chat = () => {
       });
   }, [id]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
   // Opens the attachment popover
   const handleAttachClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -127,10 +119,35 @@ export const Chat = () => {
     setAnchorEl(null);
   };
 
-  const handleImage=(e)=>{
-    console.log(e.target.files);
+  const handleImage = async (e) => {
+    const createdAt = new Date().toISOString();
     handleClosePopover();
-  }
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("images", file);
+
+    try {
+      const response = await axiosReq.post("/chat/upload-images", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log(response.data);
+      if (response.status === 200) {
+        socket.emit("message", {
+          sender_id: sender_id,
+          receiver_id: id,
+          message: response.data,
+          username: username,
+          createdAt: createdAt,
+          profileImg: profileImg,
+        });
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
+  };
 
   useEffect(() => {
     const handleMessage = (data) => {
@@ -175,7 +192,7 @@ export const Chat = () => {
         receiverId: id,
         message: message,
         username: username,
-        profileImg: profileImg
+        profileImg: profileImg,
       });
       setMessage("");
     }
@@ -194,71 +211,29 @@ export const Chat = () => {
 
   return (
     <Grid container spacing={1}>
-      <Grid
-        item
-        xs={12}
-        sm={6}
-        md={4}
-        sx={{ display: { xs: "none", sm: "block" } }}
-        className={styles.userDetailsContainer}
-      >
-        {/* User Image & Banner */}
-        <Box className={styles.bannerContainer}>
-          <Box className={styles.banner} />
-          <Avatar
-            src={profileImg}
-            alt="User Name"
-            className={styles.profileImage}
-          />
-        </Box>
-
-        {/* User Info */}
-        <Box className={styles.userInfo}>
-          <Typography variant="h6" className={styles.userName}>
-            {username1}
-          </Typography>
-          <Typography variant="body2" className={styles.userTitle}>
-            {about}
-          </Typography>
-        </Box>
-
-        <Box className={styles.sectionParent}>
-          {/* About Me Section */}
-          <Box className={styles.section}>
-            <Typography variant="body1" className={styles.sectionTitle}>
-              About Me:
-            </Typography>
-            <Typography variant="body2" className={styles.sectionText}>
-              {description}
-            </Typography>
-          </Box>
-
-          {/* Contact Section */}
-          <Box className={styles.section}>
-            <Typography variant="body1" className={styles.sectionTitle}>
-              Contact:
-            </Typography>
-            <Typography variant="body2" className={styles.sectionText}>
-              📧 {email}
-            </Typography>
-            <Typography variant="body2" className={styles.sectionText}>
-              📍 {phone}
-            </Typography>
-            <Typography variant="body2" className={styles.sectionText}>
-              📍 {address}
-            </Typography>
-          </Box>
-        </Box>
-      </Grid>
+      <UserAboutGrid
+        profileImg={profileImg}
+        username1={username1}
+        about={about}
+        description={description}
+        address={address}
+        phone={phone}
+        email={email}
+      />
 
       <Grid item xs={12} sm={6} md={8} lg={8}>
         <Box className={styles.chatContainer}>
-          <Box
-            className={styles.header}
-            onClick={() => setHeaderModalOpen(true)}
-          >
-            <Avatar src={profileImg} className={styles.headerAvatar} />
-            <Typography variant="h6" className={styles.headerName}>
+          <Box className={styles.header}>
+            <Avatar
+              src={profileImg}
+              className={styles.headerAvatar}
+              onClick={() => setHeaderModalOpen(true)}
+            />
+            <Typography
+              variant="h6"
+              className={styles.headerName}
+              onClick={() => setHeaderModalOpen(true)}
+            >
               {username1}
             </Typography>
           </Box>
@@ -281,11 +256,7 @@ export const Chat = () => {
               </Box>
             </center>
 
-            {load ? (
-              <Box>
-                <CircularProgress size={30} className={styles.reload} />
-              </Box>
-            ) : messages.length === 0 ? (
+            {messages.length === 0 ? (
               <Typography variant="body2" className={styles.noMessages}>
                 No messages yet. Start the conversation!
               </Typography>
@@ -293,7 +264,21 @@ export const Chat = () => {
               messages.map((msg, index) =>
                 msg.sender_id === sender_id ? (
                   <Box key={index} className={styles.RightmessageBubble}>
-                    <Typography variant="body2">{msg.message}</Typography>
+                    <Typography variant="body2">
+                      {msg.message.startsWith("https://res.cloudinary.com") ? (
+                        <img
+                          src={msg.message}
+                          alt=""
+                          style={{
+                            width: "240px",
+                            height: "240px",
+                            objectFit: "contain",
+                          }}
+                        />
+                      ) : (
+                        msg.message
+                      )}
+                    </Typography>
                     <Typography variant="caption" className={styles.timestamp}>
                       {dayjs(msg.createdAt).format("h:mm A")}
                     </Typography>
@@ -301,7 +286,23 @@ export const Chat = () => {
                 ) : (
                   <Box>
                     <Box key={index} className={styles.LeftmessageBubble}>
-                      <Typography variant="body2">{msg.message}</Typography>
+                      <Typography variant="body2">
+                        {msg.message.startsWith(
+                          "https://res.cloudinary.com"
+                        ) ? (
+                          <img
+                            src={msg.message}
+                            alt=""
+                            style={{
+                              width: "240px",
+                              height: "240px",
+                              objectFit: "contain",
+                            }}
+                          />
+                        ) : (
+                          msg.message
+                        )}
+                      </Typography>
                       <Typography
                         variant="caption"
                         className={styles.timestamp}
@@ -365,7 +366,7 @@ export const Chat = () => {
             <input
               type="file"
               hidden
-              multiple
+              // multiple
               onChange={handleImage}
               onClick={(e) => e.stopPropagation()}
             />
