@@ -100,12 +100,12 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
                   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                   variant={user?.status === "online" ? "dot" : ""}
                 >
-                  <Avatar src={user?.avatar} className={styles.avatar} />
+                  <Avatar src={user?.profileImage} className={styles.avatar} />
                 </StyledBadge>
               </ListItemAvatar>
               <ListItemText
                 primary={sender_id === user?._id ? "You" : user?.username}
-                secondary={user?.description}
+                secondary={user?.description || "Hey there!! I am using pingMe."}
               />
               <ChevronRightIcon className={styles.chevronIcon} />
             </ListItem>

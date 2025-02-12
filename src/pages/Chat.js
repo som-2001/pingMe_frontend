@@ -25,6 +25,8 @@ import toast from "react-hot-toast";
 import ScrollToBottom from "react-scroll-to-bottom";
 import dayjs from "dayjs";
 import { UserAboutGrid } from "../components/UserAboutGrid";
+import { ImageModel } from "../components/ImageModal";
+import { ArrowDown } from "../components/ArrowDown";
 
 const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
   reconnection: true,
@@ -53,6 +55,8 @@ export const Chat = () => {
   const [status, setStatus] = useState("");
   const [progress, setProgress] = useState(0);
   const messageRef = useRef(null);
+  const [open1, setOpen1] = useState(false);
+  const [image, setImage] = useState("");
 
   useEffect(() => {
     setLoad(true);
@@ -120,6 +124,13 @@ export const Chat = () => {
   // Closes the attachment popover
   const handleClosePopover = () => {
     setAnchorEl(null);
+  };
+
+  const ImageView = (image) => {
+    setOpen1(true);
+    console.log(image);
+    console.log("heyy")
+    setImage(image);
   };
 
   const handleImage = async (e) => {
@@ -263,7 +274,11 @@ export const Chat = () => {
                 >
                   {username1}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{marginTop:'-4px'}}>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ marginTop: "-4px" }}
+                >
                   {status}
                 </Typography>
               </span>
@@ -272,7 +287,7 @@ export const Chat = () => {
 
           <ScrollToBottom className={styles.messagesContainer} behavior="auto">
             <center>
-              <Box sx={{ backgroundColor: "transparent" }}>
+              <Box sx={{ backgroundColor: "transparent",my:1 }}>
                 <Box>{load && <CircularProgress />}</Box>
                 {page !== total && !load && messages.length > 29 && (
                   <Button
@@ -307,6 +322,7 @@ export const Chat = () => {
                             height: "240px",
                             objectFit: "contain",
                           }}
+                          onClick={(e) => ImageView(msg)}
                         />
                       ) : (
                         msg.message
@@ -321,7 +337,7 @@ export const Chat = () => {
                     <Box key={index} className={styles.LeftmessageBubble}>
                       <Typography variant="body2">
                         {msg.message.startsWith(
-                          "https://res.cloudinary.com"
+                          "https://res.cloudinary.com/dpacclyw4/image"
                         ) ? (
                           <img
                             src={msg.message}
@@ -331,6 +347,7 @@ export const Chat = () => {
                               height: "240px",
                               objectFit: "contain",
                             }}
+                            onClick={(e) => ImageView(msg)}
                           />
                         ) : (
                           msg.message
@@ -415,6 +432,8 @@ export const Chat = () => {
         </Box>
       </Popover>
 
+      <ArrowDown/>
+      <ImageModel open={open1} setOpen={setOpen1} image={image} />
       {headerModalOpen && (
         <UserDetailsModal
           headerModalOpen={headerModalOpen}
@@ -426,6 +445,8 @@ export const Chat = () => {
           email={email}
           address={address}
           phone={phone}
+          receiverId={id}
+          senderId={sender_id}
         />
       )}
     </Grid>

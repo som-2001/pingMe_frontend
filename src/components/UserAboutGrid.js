@@ -126,7 +126,7 @@ export const UserAboutGrid = ({
                 No Media found.
               </Typography>
             ) : (
-              mediaArray?.map((data, index) => (
+              mediaArray?.slice(0,4)?.map((data, index) => (
                 <img
                   key={index}
                   src={data.message}

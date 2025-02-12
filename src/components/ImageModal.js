@@ -34,7 +34,7 @@ export const ImageModel = ({ open, setOpen, image }) => {
         <img
           src={image.message}
           alt=""
-          style={{ width: "400px", height: "400px", objectFit: "contain" }}
+          style={{ width: "300px", height: "300px", objectFit: "contain" }}
         />
 
         <Typography variant="body2" color="text.secondary">
