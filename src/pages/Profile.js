@@ -11,6 +11,7 @@ import {
   TextField,
   Button,
   Box,
+  Skeleton,
 } from "@mui/material";
 import styles from "../styles/Profile.module.css";
 import { axiosReq } from "../axios/Axios";
@@ -19,10 +20,6 @@ import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
 
 const schema = yup.object().shape({
-  username: yup
-    .string()
-    .required("Username is required")
-    .min(3, "at least 3 characters"),
   about: yup
     .string()
     .required("About is required")
@@ -49,9 +46,11 @@ export const Profile = () => {
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [profileImg,setProfileImg]=useState('');
+  const [profileImg, setProfileImg] = useState("");
+  const [load, setLoad] = useState(true);
 
   useEffect(() => {
+
     axiosReq
       .get(`/user/profile/${id}`)
       .then((res) => {
@@ -69,7 +68,9 @@ export const Profile = () => {
         setAddress(
           res?.data?.contact?.[0]?.address || "123 Developer St, Code City"
         );
-        setProfileImg(res?.data?.profileImage || "https://via.placeholder.com/150")
+        setProfileImg(
+          res?.data?.profileImage || "https://via.placeholder.com/150"
+        );
         setValue("username", res.data.username);
         setValue("about", res.data.about);
         setValue("description", res.data.description);
@@ -78,6 +79,9 @@ export const Profile = () => {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setLoad(false);
       });
   }, [editMode]);
 
@@ -96,7 +100,7 @@ export const Profile = () => {
       .then((res) => {
         console.log(res.data);
         setEditMode(false);
-        toast.success("Updated successfully!!")
+        toast.success("Updated successfully!!");
       })
       .catch((err) => {
         console.log(err);
@@ -105,15 +109,14 @@ export const Profile = () => {
   };
 
   const handleFileChange = (e) => {
-
-    const url=URL.createObjectURL(e.target.files[0]);
+    const url = URL.createObjectURL(e.target.files[0]);
     setProfileImg(url);
-    const formData=new FormData();
-    formData.append("image",e.target.files[0])
+    const formData = new FormData();
+    formData.append("image", e.target.files[0]);
     axiosReq
       .put(`/user/profileImage/${id}`, formData)
       .then((res) => {
-        toast.success("Profile picture is updated successfully!!")
+        toast.success("Profile picture is updated successfully!!");
       })
       .catch((err) => {
         console.log(err);
@@ -148,20 +151,6 @@ export const Profile = () => {
             <Grid item xs={12} md={8}>
               {editMode ? (
                 <form onSubmit={handleSubmit(onSubmit)}>
-                  <Controller
-                    name="username"
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="UserName"
-                        fullWidth
-                        margin="dense"
-                        error={!!errors.username}
-                        helperText={errors.username?.message}
-                      />
-                    )}
-                  />
                   <Controller
                     name="about"
                     control={control}
@@ -248,27 +237,27 @@ export const Profile = () => {
                     Username
                   </Typography>
                   <Typography variant="body1" className={styles.profile_text}>
-                    {username}
+                    {load?<Skeleton animation="wave" width={120}/>:username}
                   </Typography>
                   <Typography variant="body1" className={styles.profile_text}>
-                    {about}
+                  {load?<Skeleton animation="wave" width={240}/>:about}
                   </Typography>
 
                   <Typography variant="h6" className={styles.profile_heading}>
                     Description
                   </Typography>
                   <Typography variant="body1" className={styles.profile_text}>
-                    {description}
+                  {load?<Skeleton animation="wave" width={240}/>:description}
                   </Typography>
 
                   <Typography variant="h6" className={styles.profile_heading}>
                     Contact Information
                   </Typography>
                   <Typography variant="body1" className={styles.profile_text}>
-                    📞 Phone: {phone}
+                    📞 Phone: {load?<Skeleton animation="wave" width={120}/>:phone}
                   </Typography>
                   <Typography variant="body1" className={styles.profile_text}>
-                    📍 Address: {address}
+                    📍 Address: {load?<Skeleton animation="wave" width={240}/>:address}
                   </Typography>
 
                   <Box className={styles.buttonContainer}>

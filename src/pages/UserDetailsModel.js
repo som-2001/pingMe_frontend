@@ -103,7 +103,7 @@ export const UserDetailsModal = ({
                 </Grid>
 
                 {page < total && (
-                  <Button className={styles1.exploreButton} onClick={loadMore}>
+                  <Button className={styles1.loadmore} onClick={loadMore}>
                     Load More
                   </Button>
                 )}

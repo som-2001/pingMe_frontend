@@ -60,6 +60,7 @@ export const Chat = () => {
   const imageRef = useRef(null);
   const timerRef = useRef(0);
   const [type, setType] = useState("stop_typing");
+  const [userDetailsLoad,setUserDetailsLoad]=useState(true);
 
   const clickTheImageIcon = () => {
     imageRef.current.click();
@@ -120,6 +121,8 @@ export const Chat = () => {
       })
       .catch((err) => {
         console.log(err);
+      }).finally(()=>{
+        setUserDetailsLoad(false);
       });
   }, [id]);
 
@@ -318,6 +321,7 @@ export const Chat = () => {
         email={email}
         receiverId={id}
         senderId={sender_id}
+        load={userDetailsLoad}
       />
 
       <Grid item xs={12} sm={6} md={8} lg={8}>
@@ -354,8 +358,7 @@ export const Chat = () => {
                   color="text.secondary"
                   sx={{ marginTop: "-4px" }}
                 >
-                  {type==="stop_typing"?status:`${type}...`}
-                 
+                  {type === "stop_typing" ? status : `${type}...`}
                 </Typography>
               </span>
             </Box>
@@ -398,14 +401,12 @@ export const Chat = () => {
                             width: "240px",
                             height: "240px",
                             objectFit: "contain",
+                              cursor:"pointer"
                           }}
                           onClick={(e) => ImageView(msg)}
                         />
                       ) : (
-                        <>
-                        {msg.message}
-                       
-                        </>
+                        <>{msg.message}</>
                       )}
                     </Typography>
                     <Typography variant="caption" className={styles.timestamp}>
@@ -426,13 +427,15 @@ export const Chat = () => {
                               width: "240px",
                               height: "240px",
                               objectFit: "contain",
+                              cursor:"pointer"
                             }}
                             onClick={(e) => ImageView(msg)}
                           />
                         ) : (
-                          msg.message
+                          <>{msg.message}</>
                         )}
                       </Typography>
+
                       <Typography
                         variant="caption"
                         className={styles.timestamp}
@@ -445,7 +448,6 @@ export const Chat = () => {
               )
             )}
           </ScrollToBottom>
-
           <Box className={styles.inputContainer}>
             <IconButton onClick={handleAttachClick}>
               <AttachFileIcon />

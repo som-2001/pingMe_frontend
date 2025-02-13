@@ -6,7 +6,12 @@
   margin: 20px;
  
 }
-
+.loadmore{
+  background: #2d65a1 !important;
+  color: white !important;
+  padding: 10px !important;
+  border-radius: 10px !important;
+}
 /* Sidebar Styling */
 .sidebar {
   flex: 1;

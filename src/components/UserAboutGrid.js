@@ -1,4 +1,4 @@
-import { Avatar, Box, Grid, Typography } from "@mui/material";
+import { Avatar, Box, Grid, Skeleton, Typography } from "@mui/material";
 import styles from "../styles/Chat.module.css";
 import { useEffect, useState } from "react";
 import { axiosReq } from "../axios/Axios";
@@ -19,11 +19,12 @@ export const UserAboutGrid = ({
   email,
   receiverId,
   senderId,
+  load,
 }) => {
   const [mediaArray, setMediaArray] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [load, setLoad] = useState(false);
+  const [mediaLoad, setMediaLoad] = useState(true);
   const [totalLength, setTotalLength] = useState(0);
   const [open, setOpen] = useState(false);
   const [image, setImage] = useState("");
@@ -37,12 +38,15 @@ export const UserAboutGrid = ({
         page: page,
       })
       .then((res) => {
-        setMediaArray([...mediaArray,...res.data.data]);
+        setMediaArray([...mediaArray, ...res.data.data]);
         setTotal(res.data.totalPages);
         setTotalLength(res.data.totalMedia);
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setMediaLoad(false);
       });
   }, [page]);
 
@@ -75,10 +79,22 @@ export const UserAboutGrid = ({
         {/* User Info */}
         <Box className={styles.userInfo}>
           <Typography variant="h6" className={styles.userName}>
-            {username1}
+            {load ? (
+              <Box className={styles.centerSkeleton}>
+                <Skeleton animation="wave" width={120} />
+              </Box>
+            ) : (
+              username1
+            )}
           </Typography>
           <Typography variant="body2" className={styles.userTitle}>
-            {about}
+            {load ? (
+              <Box className={styles.centerSkeleton}>
+                <Skeleton animation="wave" width={240} />
+              </Box>
+            ) : (
+              about
+            )}
           </Typography>
         </Box>
 
@@ -89,7 +105,7 @@ export const UserAboutGrid = ({
               About Me:
             </Typography>
             <Typography variant="body2" className={styles.sectionText}>
-              {description}
+              {load ? <Skeleton animation="wave" width={120} /> : description}
             </Typography>
           </Box>
 
@@ -99,13 +115,17 @@ export const UserAboutGrid = ({
               Contact:
             </Typography>
             <Typography variant="body2" className={styles.sectionText}>
-              📧 {email}
+              {load ? <Skeleton animation="wave" width={240} /> : `📧${email}`}
             </Typography>
             <Typography variant="body2" className={styles.sectionText}>
-              📍 {phone}
+              {load ? <Skeleton animation="wave" width={240} /> : `📍${phone}`}
             </Typography>
             <Typography variant="body2" className={styles.sectionText}>
-              📍 {address}
+              {load ? (
+                <Skeleton animation="wave" width={240} />
+              ) : (
+                `📍${address}`
+              )}
             </Typography>
           </Box>
 
@@ -121,12 +141,19 @@ export const UserAboutGrid = ({
               />
             </Box>
 
-            {mediaArray?.length === 0 ? (
+            {mediaLoad ? (
+              <Box className={styles.parent}>
+                <Skeleton animation="wave" width={120} height={120} />
+                <Skeleton animation="wave" width={120} height={120} />
+                <Skeleton animation="wave" width={120} height={120} />
+                <Skeleton animation="wave" width={120} height={120} />
+              </Box>
+            ) : mediaArray?.length === 0 ? (
               <Typography variant="body2" align="center" sx={{ my: 5 }}>
                 No Media found.
               </Typography>
             ) : (
-              mediaArray?.slice(0,4)?.map((data, index) => (
+              mediaArray?.slice(0, 4)?.map((data, index) => (
                 <img
                   key={index}
                   src={data.message}
