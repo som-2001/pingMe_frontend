@@ -213,7 +213,7 @@ export default function Dashboard() {
                         </Typography>
                       </span>
                     }
-                    secondary={user?.sortedComments?.message.startsWith("https://res.cloudinary.com/dpacclyw4/image")?<img src={user?.sortedComments?.message} alt="" style={{width:"30px",height:"30px",objectFit:"contain",borderRadius:"10px"}}/>:user?.sortedComments?.message}
+                    secondary={user?.sortedComments?.message.startsWith("https://res.cloudinary.com/dpacclyw4/image")?<img src={user?.sortedComments?.message} alt="" style={{width:"30px",height:"30px",objectFit:"contain",borderRadius:"10px"}}/>: user?.sortedComments?.message?.length>100 ? `${user?.sortedComments?.message.slice(0,100)}...`:user?.sortedComments?.message}
                   />
                 </ListItem>
               ))

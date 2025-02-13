@@ -57,6 +57,11 @@ export const Chat = () => {
   const messageRef = useRef(null);
   const [open1, setOpen1] = useState(false);
   const [image, setImage] = useState("");
+  const imageRef = useRef(null);
+
+  const clickTheImageIcon = () => {
+    imageRef.current.click();
+  };
 
   useEffect(() => {
     setLoad(true);
@@ -129,46 +134,83 @@ export const Chat = () => {
   const ImageView = (image) => {
     setOpen1(true);
     console.log(image);
-    console.log("heyy")
     setImage(image);
   };
 
-  const handleImage = async (e) => {
+  const handleFile = async (e) => {
     const createdAt = new Date().toISOString();
-    handleClosePopover();
+
     const file = e.target.files[0];
+    if (file?.size > 1 * 1024 * 1024)
+      return toast.error("Image is more than 15mb. upload less than 15mb.");
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("images", file);
+    if (file.type.startsWith("image")) {
+      const formData = new FormData();
+      formData.append("images", file);
 
-    try {
-      const response = await axiosReq.post("/chat/upload-images", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (ProgressEvent) => {
-          setProgress(
-            Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total)
-          );
-        },
-      });
-
-      console.log(response.data);
-      if (response.status === 200) {
-        socket.emit("message", {
-          sender_id: sender_id,
-          receiver_id: id,
-          message: response.data,
-          username: username,
-          createdAt: createdAt,
-          profileImg: profileImg,
+      try {
+        const response = await axiosReq.post("/chat/upload-images", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          onUploadProgress: (ProgressEvent) => {
+            setProgress(
+              Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total)
+            );
+          },
         });
+
+        console.log(response.data);
+        if (response.status === 200) {
+          handleClosePopover();
+          socket.emit("message", {
+            sender_id: sender_id,
+            receiver_id: id,
+            message: response.data,
+            username: username,
+            createdAt: createdAt,
+            profileImg: profileImg,
+          });
+        }
+      } catch (error) {
+        console.error("Upload failed:", error);
+      } finally {
+        setProgress(0);
       }
-    } catch (error) {
-      console.error("Upload failed:", error);
-    } finally {
-      setProgress(0);
     }
   };
+
+  // else if (file.type.startsWith("video")) {
+  //   const formData = new FormData();
+  //   formData.append("videos", file);
+
+  //   try {
+  //     const response = await axiosReq.post("/chat/upload-videos", formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //       onUploadProgress: (ProgressEvent) => {
+  //         setProgress(
+  //           Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total)
+  //         );
+  //       },
+  //     });
+
+  //     console.log(response.data);
+  //     if (response.status === 200) {
+  //       handleClosePopover();
+  //       socket.emit("message", {
+  //         sender_id: sender_id,
+  //         receiver_id: id,
+  //         message: response.data,
+  //         username: username,
+  //         createdAt: createdAt,
+  //         profileImg: profileImg,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error("Upload failed:", error);
+  //   } finally {
+  //     setProgress(0);
+  //   }
+  // }
 
   useEffect(() => {
     const handleMessage = (data) => {
@@ -208,6 +250,9 @@ export const Chat = () => {
         profileImg: profileImg,
       });
 
+      setMessage("");
+      messageRef.current.value = "";
+
       await axiosReq.post("/chat/send-message", {
         senderId: sender_id,
         receiverId: id,
@@ -215,17 +260,7 @@ export const Chat = () => {
         username: username,
         profileImg: profileImg,
       });
-      setMessage("");
-      messageRef.current.value = "";
     }
-  };
-
-  // Handle click for image attachment option
-
-  // Handle click for video attachment option
-  const handleVideoClick = () => {
-    alert("Video attachment clicked!");
-    handleClosePopover();
   };
 
   const open = Boolean(anchorEl);
@@ -287,7 +322,7 @@ export const Chat = () => {
 
           <ScrollToBottom className={styles.messagesContainer} behavior="auto">
             <center>
-              <Box sx={{ backgroundColor: "transparent",my:1 }}>
+              <Box sx={{ backgroundColor: "transparent", my: 1 }}>
                 <Box>{load && <CircularProgress />}</Box>
                 {page !== total && !load && messages.length > 29 && (
                   <Button
@@ -418,21 +453,21 @@ export const Chat = () => {
             <input
               type="file"
               hidden
+              ref={imageRef}
               // multiple
-              onChange={handleImage}
-              onClick={(e) => e.stopPropagation()}
+              onChange={handleFile}
             />
-            <IconButton title="Attach Image">
+            <IconButton title="Attach Image" onClick={clickTheImageIcon}>
               <ImageIcon />
             </IconButton>
           </Button>
-          <IconButton onClick={handleVideoClick} title="Attach Video">
-            <VideocamIcon />
+          <IconButton title="Attach Video">
+            <VideocamIcon onClick={clickTheImageIcon} />
           </IconButton>
         </Box>
       </Popover>
 
-      <ArrowDown/>
+      <ArrowDown />
       <ImageModel open={open1} setOpen={setOpen1} image={image} />
       {headerModalOpen && (
         <UserDetailsModal
