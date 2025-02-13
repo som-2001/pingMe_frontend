@@ -2,11 +2,18 @@
 .dashboardContainer {
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: center;
   gap: 20px;
   margin: 20px;
- 
 }
-.loadmore{
+.noMediaAvailable{
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loadmore {
   background: #2d65a1 !important;
   color: white !important;
   padding: 10px !important;
@@ -78,7 +85,7 @@
   margin-bottom: 8px;
   color: #666;
 }
-.flexContainer{
+.flexContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -95,19 +102,19 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.centerIcon{
+.centerIcon {
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.ShortcutBox{
+.ShortcutBox {
   background-color: whitesmoke;
   padding: 14px;
   border-radius: 13px;
   transition: background 0.5s ease;
   cursor: pointer;
 }
-.ShortcutBox:hover{
+.ShortcutBox:hover {
   background: rgb(102, 101, 101);
   color: white;
 }
@@ -153,7 +160,7 @@
 }
 
 .selected {
-  background:  #f0f0f0;;
+  background: #f0f0f0;
 }
 
 .avatar {
@@ -188,9 +195,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
- 
 }
-.centerButton{
+.centerButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -206,16 +212,15 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   height: 500px;
   overflow: scroll;
-
 }
 
-.flex{
+.flex {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
 }
-.center{
+.center {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
@@ -228,9 +233,23 @@
   font-weight: bold;
 }
 
+.Skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f2f2f2;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+
+}
+.flexSkeleton {
+  display: flex;
+  align-items: center;
+}
 .closeButton {
   margin-top: 1rem !important;
-  background:  linear-gradient(to right, #56ccf2, #2f80ed);
+  background: linear-gradient(to right, #56ccf2, #2f80ed);
   color: white !important;
   width: fit-content !important;
   padding: 1rem !important;
@@ -244,8 +263,6 @@
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .dashboardContainer {
-  
     flex-direction: column !important;
-    
   }
 }

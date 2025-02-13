@@ -9,6 +9,7 @@ import {
   CircularProgress,
   Button,
   Grid,
+  Skeleton,
 } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
@@ -42,7 +43,7 @@ export const Chat = () => {
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
   const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
   const { id } = useParams();
-  const [load, setLoad] = useState(false);
+  const [load, setLoad] = useState(true);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [username1, setUsername1] = useState("");
@@ -62,12 +63,13 @@ export const Chat = () => {
   const [type, setType] = useState("stop_typing");
   const [userDetailsLoad, setUserDetailsLoad] = useState(true);
   const [last_seen, setLast_seen] = useState("");
+
   const clickTheImageIcon = () => {
     imageRef.current.click();
   };
 
   useEffect(() => {
-    setLoad(true);
+    
     axiosReq
       .post("/chat/get-messages", {
         page: page,
@@ -342,26 +344,50 @@ export const Chat = () => {
                   }}
                 />
               )}
-              <Avatar
-                src={profileImg}
-                className={styles.headerAvatar}
-                onClick={() => setHeaderModalOpen(true)}
-              />
+              {userDetailsLoad ? (
+                <Skeleton
+                  variant="circular"
+                  width={48}
+                  height={48}
+                  sx={{ marginRight: "16px" }}
+                />
+              ) : (
+                <Avatar
+                  src={profileImg}
+                  className={styles.headerAvatar}
+                  onClick={() => setHeaderModalOpen(true)}
+                />
+              )}
               <span>
                 <Typography
                   variant="body1"
                   className={styles.headerName}
                   onClick={() => setHeaderModalOpen(true)}
                 >
-                  {username1}
+                  {userDetailsLoad ? (
+                    <Skeleton animation="wave" width={100} />
+                  ) : (
+                    username1
+                  )}
                 </Typography>
                 <Typography
                   variant="body2"
                   color="text.secondary"
                   sx={{ marginTop: "-4px" }}
                 >
-                  {type === "stop_typing" ? status==="offline"?"":"online" : `${type}...`}
-                  {status === "offline" ? ` last seen ${dayjs(last_seen).fromNow(true)} ago` : null}
+                  {userDetailsLoad?<Skeleton animation="wave" width={150}/>:null}
+                  {userDetailsLoad
+                    ? null
+                    : type === "stop_typing"
+                    ? status === "offline"
+                      ? ""
+                      : "online"
+                    : `${type}...`}
+                  {userDetailsLoad
+                    ? null
+                    : status === "offline"
+                    ? ` last seen ${dayjs(last_seen).fromNow(true)} ago`
+                    : null}
                 </Typography>
               </span>
             </Box>

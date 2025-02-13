@@ -8,8 +8,8 @@ import {
   Avatar,
   Typography,
   Button,
-  CircularProgress,
   Grid,
+  Skeleton,
 } from "@mui/material";
 import ExploreIcon from "@mui/icons-material/Explore";
 
@@ -77,11 +77,11 @@ export default function Dashboard() {
     <Box className={styles.dashboardContainer}>
       <Box
         className={styles.sidebar}
-        sx={{ height: { xs: "100vh", lg: "90vh" } }}
+        sx={{ height: "fit-content" }}
       >
         <Box className={styles.sidebarHeader}>
           <DashboardIcon className={styles.headerIcon} />
-          <Typography variant="h4" className={styles.welcome}>
+          <Typography variant="h6" className={styles.welcome}>
             Welcome Back, {username}!
           </Typography>
         </Box>
@@ -147,9 +147,35 @@ export default function Dashboard() {
           </Typography>
         </Box>
         {load ? (
-          <Box className={styles.center}>
-            <CircularProgress size={30} />
-          </Box>
+          Array.from({ length: 5 }).map((data, index) => (
+            <Box className={styles.Skeleton} sx={{
+              width:{xs:"270px",sm:"auto"}
+            }}>
+              <Box className={styles.flexSkeleton}>
+                <Skeleton
+                  variant="circular"
+                  width={48}
+                  height={48}
+                  sx={{ marginRight: "16px" }}
+                />
+                <Box>
+                  <Skeleton variant="text" width="120px" height={20} />
+                  <Skeleton
+                    variant="text"
+                    width="200px"
+                    height={20}
+                    sx={{ marginTop: "8px" }}
+                  />
+                </Box>
+              </Box>
+              <Skeleton
+                variant="text"
+                width={40}
+                height={20}
+                sx={{ marginTop: "-20px" }}
+              />
+            </Box>
+          ))
         ) : (
           <List className={styles.list}>
             {users?.length === 0 ? (
@@ -212,8 +238,16 @@ export default function Dashboard() {
                           ? user.receiver?.username
                           : user.sender?.username}
                         <Typography variant="body2">
-                          {dayjs(user.sortedComments.createdAt).fromNow(true)}{" "}
-                          ago
+                          {dayjs().diff(
+                            dayjs(user.sortedComments.createdAt),
+                            "hours"
+                          ) < 24
+                            ? dayjs(user.sortedComments.createdAt).format(
+                                "h:mm A"
+                              )
+                            : dayjs(user.sortedComments.createdAt).format(
+                                "DD/MM/YY"
+                              )}
                         </Typography>
                       </span>
                     }

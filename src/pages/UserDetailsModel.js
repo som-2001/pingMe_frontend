@@ -81,7 +81,7 @@ export const UserDetailsModal = ({
         ) : (
           <Box className={styles.tabContent}>
             {mediaArray?.length === 0 ? (
-              <Typography variant="body2" color="text.secondary" align="center">
+              <Typography variant="body2" color="text.secondary" align="center" className={styles1.noMediaAvailable}>
                 No Media available
               </Typography>
             ) : (
