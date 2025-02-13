@@ -12,6 +12,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { axiosReq } from "./axios/Axios";
 import { Profile } from "./pages/Profile";
+import { ProtectedRoute } from "./pages/ProtectedRoute";
 
 function App() {
   const refreshToken = Cookies?.get("refreshToken");
@@ -26,9 +27,6 @@ function App() {
     });
   }, [sender_id]); // Depend on sender_id
 
-
-  
-
   return (
     <>
       <Toaster />
@@ -37,9 +35,11 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<RegistrationForm />} />
           <Route path="/signin" element={<Login />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/chat/:id" element={<Chat />} />
+          <Route path="/" element={<ProtectedRoute/>}>
+            <Route path="profile" element={<Profile />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="chat/:id" element={<Chat />} />
+          </Route>
         </Routes>
       </Router>
     </>

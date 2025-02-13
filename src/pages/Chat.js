@@ -60,8 +60,8 @@ export const Chat = () => {
   const imageRef = useRef(null);
   const timerRef = useRef(0);
   const [type, setType] = useState("stop_typing");
-  const [userDetailsLoad,setUserDetailsLoad]=useState(true);
-
+  const [userDetailsLoad, setUserDetailsLoad] = useState(true);
+  const [last_seen, setLast_seen] = useState("");
   const clickTheImageIcon = () => {
     imageRef.current.click();
   };
@@ -101,6 +101,7 @@ export const Chat = () => {
       .then((res) => {
         console.log(res.data);
         setUsername1(res?.data?.username);
+        setLast_seen(res?.data?.last_seen);
         setStatus(res?.data?.status);
         setAbout(
           res?.data?.about ||
@@ -121,7 +122,8 @@ export const Chat = () => {
       })
       .catch((err) => {
         console.log(err);
-      }).finally(()=>{
+      })
+      .finally(() => {
         setUserDetailsLoad(false);
       });
   }, [id]);
@@ -358,7 +360,8 @@ export const Chat = () => {
                   color="text.secondary"
                   sx={{ marginTop: "-4px" }}
                 >
-                  {type === "stop_typing" ? status : `${type}...`}
+                  {type === "stop_typing" ? status==="offline"?"":"online" : `${type}...`}
+                  {status === "offline" ? ` last seen ${dayjs(last_seen).fromNow(true)} ago` : null}
                 </Typography>
               </span>
             </Box>
@@ -401,7 +404,7 @@ export const Chat = () => {
                             width: "240px",
                             height: "240px",
                             objectFit: "contain",
-                              cursor:"pointer"
+                            cursor: "pointer",
                           }}
                           onClick={(e) => ImageView(msg)}
                         />
@@ -427,7 +430,7 @@ export const Chat = () => {
                               width: "240px",
                               height: "240px",
                               objectFit: "contain",
-                              cursor:"pointer"
+                              cursor: "pointer",
                             }}
                             onClick={(e) => ImageView(msg)}
                           />

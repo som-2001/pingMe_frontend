@@ -13,6 +13,7 @@ export const UserAboutGrid = ({
   profileImg,
   username1,
   about,
+
   description,
   address,
   phone,
