@@ -186,8 +186,12 @@ export default function Dashboard() {
                       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                       variant={
                         user.sender._id === sender_id
-                          ? user.receiver?.status ==="online" ? "dot":""
-                          : user.sender?.status ==="online" ? "dot":""
+                          ? user.receiver?.status === "online"
+                            ? "dot"
+                            : ""
+                          : user.sender?.status === "online"
+                          ? "dot"
+                          : ""
                       }
                     >
                       <Avatar
@@ -213,7 +217,26 @@ export default function Dashboard() {
                         </Typography>
                       </span>
                     }
-                    secondary={user?.sortedComments?.message.startsWith("https://res.cloudinary.com/dpacclyw4/image")?<img src={user?.sortedComments?.message} alt="" style={{width:"30px",height:"30px",objectFit:"contain",borderRadius:"10px"}}/>: user?.sortedComments?.message?.length>100 ? `${user?.sortedComments?.message.slice(0,100)}...`:user?.sortedComments?.message}
+                    secondary={
+                      user?.sortedComments?.message.startsWith(
+                        "https://res.cloudinary.com/dpacclyw4/image"
+                      ) ? (
+                        <img
+                          src={user?.sortedComments?.message}
+                          alt=""
+                          style={{
+                            width: "30px",
+                            height: "30px",
+                            objectFit: "contain",
+                            borderRadius: "10px",
+                          }}
+                        />
+                      ) : user?.sortedComments?.message?.length > 100 ? (
+                        `${user?.sortedComments?.message.slice(0, 100)}...`
+                      ) : (
+                        user?.sortedComments?.message
+                      )
+                    }
                   />
                 </ListItem>
               ))

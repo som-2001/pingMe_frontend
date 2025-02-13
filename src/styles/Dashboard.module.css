@@ -170,10 +170,12 @@
   width: fit-content !important;
   padding: 1rem !important;
   border-radius: 30px !important;
+  transition: all ease 2s;
 }
 
 .exploreButton:hover {
-  background-color: #0056b3;
+  background: #040c14 !important;
+  color: white !important;
 }
 
 /* Modal Styling */

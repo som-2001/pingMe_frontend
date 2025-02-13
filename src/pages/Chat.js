@@ -58,6 +58,8 @@ export const Chat = () => {
   const [open1, setOpen1] = useState(false);
   const [image, setImage] = useState("");
   const imageRef = useRef(null);
+  const timerRef = useRef(0);
+  const [type, setType] = useState("stop_typing");
 
   const clickTheImageIcon = () => {
     imageRef.current.click();
@@ -121,6 +123,16 @@ export const Chat = () => {
       });
   }, [id]);
 
+  useEffect(() => {
+    function handleTypeEvent(data) {
+      setType(data.typing);
+    }
+    socket.on("typing_event", handleTypeEvent);
+    return () => {
+      socket.off("typing_event", handleTypeEvent);
+    };
+  });
+
   // Opens the attachment popover
   const handleAttachClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -137,11 +149,39 @@ export const Chat = () => {
     setImage(image);
   };
 
+  const handleMessage = (e) => {
+    const newMessage = e.target.value;
+    setMessage(newMessage);
+
+    if (newMessage.length !== 0 && timerRef.current === 0) {
+      socket.emit("typing_event", {
+        typing: "typing",
+        sender_id: sender_id,
+        username: username,
+        receiver_id: id,
+      });
+
+      timerRef.current = 1;
+    }
+
+    clearTimeout(timerRef.current);
+
+    timerRef.current = setTimeout(() => {
+      timerRef.current = 0;
+      socket.emit("typing_event", {
+        typing: "stop_typing",
+        sender_id: sender_id,
+        username: username,
+        receiver_id: id,
+      });
+    }, 2000);
+  };
+
   const handleFile = async (e) => {
     const createdAt = new Date().toISOString();
 
     const file = e.target.files[0];
-    if (file?.size > 1 * 1024 * 1024)
+    if (file?.size > 15 * 1024 * 1024)
       return toast.error("Image is more than 15mb. upload less than 15mb.");
     if (!file) return;
 
@@ -314,7 +354,8 @@ export const Chat = () => {
                   color="text.secondary"
                   sx={{ marginTop: "-4px" }}
                 >
-                  {status}
+                  {type==="stop_typing"?status:`${type}...`}
+                 
                 </Typography>
               </span>
             </Box>
@@ -324,6 +365,7 @@ export const Chat = () => {
             <center>
               <Box sx={{ backgroundColor: "transparent", my: 1 }}>
                 <Box>{load && <CircularProgress />}</Box>
+
                 {page !== total && !load && messages.length > 29 && (
                   <Button
                     variant="contained"
@@ -360,7 +402,10 @@ export const Chat = () => {
                           onClick={(e) => ImageView(msg)}
                         />
                       ) : (
-                        msg.message
+                        <>
+                        {msg.message}
+                       
+                        </>
                       )}
                     </Typography>
                     <Typography variant="caption" className={styles.timestamp}>
@@ -411,7 +456,7 @@ export const Chat = () => {
               fullWidth
               value={message}
               ref={messageRef}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleMessage}
               InputProps={{
                 style: {
                   borderRadius: "50px",

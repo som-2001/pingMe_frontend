@@ -19,11 +19,8 @@ export const UserDetailsModal = ({
   const [mediaArray, setMediaArray] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [load, setLoad] = useState(false);
   const [totalLength, setTotalLength] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [image, setImage] = useState("");
-  const [loadmore, setLoadMore] = useState(false);
+
 
   useEffect(() => {
     axiosReq
