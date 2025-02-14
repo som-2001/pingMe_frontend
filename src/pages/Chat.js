@@ -69,7 +69,6 @@ export const Chat = () => {
   };
 
   useEffect(() => {
-    
     axiosReq
       .post("/chat/get-messages", {
         page: page,
@@ -89,6 +88,25 @@ export const Chat = () => {
       });
   }, [page]);
 
+  useEffect(() => {
+    const userJoined = () => {
+      setStatus("online");
+    };
+
+    const connectUserBroadcastToAll = (data) => {
+      console.log(data.receiver_id, id);
+      if (data.sender_id === id) {
+        setStatus("online");
+      }
+    };
+
+    socket.on("user_joined", userJoined);
+    socket.on("connectUserBroadcastToAll", connectUserBroadcastToAll);
+    return () => {
+      socket.off("user_joined", userJoined);
+      socket.off("connectUserBroadcastToAll", connectUserBroadcastToAll);
+    };
+  }, []);
   useEffect(() => {
     const room = `room_${id}`;
     socket.emit("room_join", {
@@ -310,6 +328,31 @@ export const Chat = () => {
     }
   };
 
+  useEffect(() => {
+    const disconnectedUser = (data) => {
+      setStatus("offline");
+      setLast_seen(data.last_seen);
+    };
+
+    const disconnectUserBroadcastToAll = (data) => {
+      console.log(data.id, id);
+      console.log(typeof data.id, typeof id);
+
+      if (data.id === id) {
+        setStatus("offline");
+        setLast_seen(data.last_seen);
+      }
+    };
+
+    socket.on("disconnectedUser", disconnectedUser);
+    socket.on("disconnectUserBroadcastToAll", disconnectUserBroadcastToAll);
+
+    return () => {
+      socket.off("disconnectedUser", disconnectedUser);
+      socket.off("disconnectUserBroadcastToAll", disconnectUserBroadcastToAll);
+    };
+  }, []);
+
   const open = Boolean(anchorEl);
   const popoverId = open ? "attachment-popover" : undefined;
 
@@ -375,7 +418,9 @@ export const Chat = () => {
                   color="text.secondary"
                   sx={{ marginTop: "-4px" }}
                 >
-                  {userDetailsLoad?<Skeleton animation="wave" width={150}/>:null}
+                  {userDetailsLoad ? (
+                    <Skeleton animation="wave" width={150} />
+                  ) : null}
                   {userDetailsLoad
                     ? null
                     : type === "stop_typing"

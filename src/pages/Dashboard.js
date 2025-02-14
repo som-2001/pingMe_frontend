@@ -27,7 +27,6 @@ import toast from "react-hot-toast";
 import { NoChatsFound } from "../components/NoChatsFound";
 import { io } from "socket.io-client";
 import dayjs from "dayjs";
-import { StyledBadge } from "../components/StyleBadge";
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
 
@@ -45,6 +44,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
   const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
+  
 
   useEffect(() => {
     const room = `room_${sender_id}`;
@@ -75,10 +75,7 @@ export default function Dashboard() {
   }, [sender_id]);
   return (
     <Box className={styles.dashboardContainer}>
-      <Box
-        className={styles.sidebar}
-        sx={{ height: "fit-content" }}
-      >
+      <Box className={styles.sidebar} sx={{ height: "fit-content" }}>
         <Box className={styles.sidebarHeader}>
           <DashboardIcon className={styles.headerIcon} />
           <Typography variant="h6" className={styles.welcome}>
@@ -148,9 +145,12 @@ export default function Dashboard() {
         </Box>
         {load ? (
           Array.from({ length: 5 }).map((data, index) => (
-            <Box className={styles.Skeleton} sx={{
-              width:{xs:"270px",sm:"auto"}
-            }}>
+            <Box
+              className={styles.Skeleton}
+              sx={{
+                width: { xs: "270px", sm: "auto" },
+              }}
+            >
               <Box className={styles.flexSkeleton}>
                 <Skeleton
                   variant="circular"
@@ -207,28 +207,14 @@ export default function Dashboard() {
                   }}
                 >
                   <ListItemAvatar>
-                    <StyledBadge
-                      overlap="circular"
-                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                      variant={
+                    <Avatar
+                      src={
                         user.sender._id === sender_id
-                          ? user.receiver?.status === "online"
-                            ? "dot"
-                            : ""
-                          : user.sender?.status === "online"
-                          ? "dot"
-                          : ""
+                          ? user.receiver?.profileImage
+                          : user.sender?.profileImage
                       }
-                    >
-                      <Avatar
-                        src={
-                          user.sender._id === sender_id
-                            ? user.receiver?.profileImage
-                            : user.sender?.profileImage
-                        }
-                        className={styles.avatar}
-                      />
-                    </StyledBadge>
+                      className={styles.avatar}
+                    />
                   </ListItemAvatar>
                   <ListItemText
                     sx={{ padding: "10px" }}
@@ -279,7 +265,7 @@ export default function Dashboard() {
         )}
       </Box>
 
-      <ExploreUsersModal open={open} setOpen={setOpen} />
+      <ExploreUsersModal open={open} setOpen={setOpen} socket={socket} username={username}/>
     </Box>
   );
 }

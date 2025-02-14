@@ -21,56 +21,77 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { StyledBadge } from "./StyleBadge";
 
-export const ExploreUsersModal = ({ open, setOpen }) => {
+export const ExploreUsersModal = ({ open, setOpen, socket, username }) => {
   const [load, setLoad] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [users, setUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const loadRef = useRef(null);
   const navigate = useNavigate();
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
+
+  // Helper functions for localStorage
+  const saveOnlineUsers = (users) => {
+    localStorage.setItem("onlineUsers", JSON.stringify(users));
+  };
+
+  const getOnlineUsers = () => {
+    return JSON.parse(localStorage.getItem("onlineUsers")) || [];
+  };
+
+  useEffect(() => {
+    const room = `room_${sender_id}`;
+
+    socket.emit("room_join", {
+      room: room,
+      sender_id: sender_id,
+      username: username,
+    });
+  }, [sender_id, username]);
+
+  useEffect(() => {
+    // Handle user connect
+    socket.on("connectUserBroadcastToAll", (data) => {
+      const currentOnlineUsers = getOnlineUsers();
+      if (!currentOnlineUsers.includes(data.sender_id)) {
+        const updatedUsers = [...currentOnlineUsers, data.sender_id];
+        saveOnlineUsers(updatedUsers);
+        setOnlineUsers(updatedUsers);
+      }
+    });
+
+    // Handle user disconnect
+    socket.on("disconnectUserBroadcastToAll", (data) => {
+      const currentOnlineUsers = getOnlineUsers().filter((id) => id !== data.id);
+      saveOnlineUsers(currentOnlineUsers);
+      setOnlineUsers(currentOnlineUsers);
+    });
+
+    // Load initial online users
+    setOnlineUsers(getOnlineUsers());
+
+    return () => {
+      socket.off("connectUserBroadcastToAll");
+      socket.off("disconnectUserBroadcastToAll");
+    };
+  }, [sender_id]);
 
   useEffect(() => {
     setLoad(true);
     axiosReq
       .post("/user/userList", { page: page })
       .then((res) => {
-        console.log(res.data);
         setUsers((prevUsers) => [...prevUsers, ...res.data.users]);
         setTotal(res.data.total);
       })
       .catch((err) => {
-        console.error(err);
         toast.error(err?.response?.data?.message);
       })
       .finally(() => {
         setLoad(false);
       });
   }, [page]);
-
-  //   useEffect(() => {
-  //     console.log("infiinite");
-
-  //     const observer = new IntersectionObserver(
-  //       (entries) => {
-  //         const entry = entries[0];
-  //         if (entry.isIntersecting && !load && page < total) {
-  //           console.log("infiinite2");
-  //           setPage((prev) => prev + 1);
-  //         }
-  //       },
-  //       { threshold: 0.6 }
-  //     );
-
-  //     if (loadRef.current) {
-  //       observer.observe(loadRef.current);
-  //     }
-  //     return () => {
-  //       if (loadRef.current) {
-  //         observer.unobserve(loadRef.current);
-  //       } // ✅ Ensure cleanup
-  //     };
-  //   }, [load, page, total]);
 
   return (
     <Modal open={open} onClose={() => setOpen(false)} className={styles.modal}>
@@ -80,17 +101,14 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
             Explore People
           </Typography>
 
-          <CloseIcon
-            sx={{ cursor: "pointer" }}
-            onClick={(e) => setOpen(false)}
-          />
+          <CloseIcon sx={{ cursor: "pointer" }} onClick={() => setOpen(false)} />
         </Box>
         <List className={styles.list}>
           {users.map((user) => (
             <ListItem
               key={user.id}
               className={styles.listItem}
-              onClick={(e) =>
+              onClick={() =>
                 navigate(`/chat/${user._id}`, { state: { userDetails: user } })
               }
             >
@@ -98,7 +116,7 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
                 <StyledBadge
                   overlap="circular"
                   anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                  variant={user?.status === "online" ? "dot" : ""}
+                  variant={onlineUsers.includes(user._id) ? "dot" : ""}
                 >
                   <Avatar src={user?.profileImage} className={styles.avatar} />
                 </StyledBadge>
@@ -112,15 +130,14 @@ export const ExploreUsersModal = ({ open, setOpen }) => {
           ))}
         </List>
 
-        {/* ✅ Loading Indicator for Infinite Scroll */}
-
+        {/* Loading Indicator */}
         <Box>{load && <CircularProgress />}</Box>
         {page !== total && !load && (
           <Button
             variant="contained"
             color="error"
             ref={loadRef}
-            onClick={(e) => {
+            onClick={() => {
               setLoad(true);
               setPage((prev) => prev + 1);
             }}
