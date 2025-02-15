@@ -36,10 +36,10 @@ if (self.firebase) {
   messaging.onBackgroundMessage((payload) => {
     console.log("📩 Background Notification Received:", payload);
 
-    const notificationTitle = payload.notification?.title || "New Notification";
+    const notificationTitle = payload.data?.title || "New Notification";
     const notificationOptions = {
-      body: payload.notification?.body || "You have a new message.",
-      icon: payload.data?.profileImg,
+      body: payload.data?.body || "You have a new message.",
+      icon: "/logo.webp",
       data: {
         url: payload.data?.url || "/",
         username: payload.data?.username || "Unknown",
