@@ -116,7 +116,7 @@ export default function Dashboard() {
         let updatedUsers;
   
         if (userIndex !== -1) {
-          // Update the existing user with the new message
+        
           updatedUsers = [...prevUsers];
           updatedUsers[userIndex] = {
             ...updatedUsers[userIndex],
@@ -127,7 +127,7 @@ export default function Dashboard() {
             },
           };
         } else {
-          // Add the new user if not found (in case of a new conversation)
+         
           updatedUsers = [
             ...prevUsers,
             {
