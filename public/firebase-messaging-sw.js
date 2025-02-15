@@ -36,18 +36,18 @@ if (self.firebase) {
   messaging.onBackgroundMessage((payload) => {
     console.log("📩 Background Notification Received:", payload);
 
-    // const notificationTitle = payload.notification?.title || "New Notification";
-    // const notificationOptions = {
-    //   body: payload.notification?.body || "You have a new message.",
-    //   icon: payload.data?.profileImg,
-    //   data: {
-    //     url: payload.data?.url || "/",
-    //     username: payload.data?.username || "Unknown",
-    //     profileImg: payload.data?.profileImg || "/default-user.png",
-    //   },
-    // };
+    const notificationTitle = payload.notification?.title || "New Notification";
+    const notificationOptions = {
+      body: payload.notification?.body || "You have a new message.",
+      icon: payload.data?.profileImg,
+      data: {
+        url: payload.data?.url || "/",
+        username: payload.data?.username || "Unknown",
+        profileImg: payload.data?.profileImg || "/default-user.png",
+      },
+    };
 
-    // self.registration.showNotification(notificationTitle, notificationOptions);
+    self.registration.showNotification(notificationTitle, notificationOptions);
 
     if (payload.notification) {
       // Skip showing any notification
