@@ -273,39 +273,6 @@ export const Chat = () => {
     }
   };
 
-  // else if (file.type.startsWith("video")) {
-  //   const formData = new FormData();
-  //   formData.append("videos", file);
-
-  //   try {
-  //     const response = await axiosReq.post("/chat/upload-videos", formData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //       onUploadProgress: (ProgressEvent) => {
-  //         setProgress(
-  //           Math.round((ProgressEvent.loaded * 100) / ProgressEvent.total)
-  //         );
-  //       },
-  //     });
-
-  //     console.log(response.data);
-  //     if (response.status === 200) {
-  //       handleClosePopover();
-  //       socket.emit("message", {
-  //         sender_id: sender_id,
-  //         receiver_id: id,
-  //         message: response.data,
-  //         username: username,
-  //         createdAt: createdAt,
-  //         profileImg: profileImg,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Upload failed:", error);
-  //   } finally {
-  //     setProgress(0);
-  //   }
-  // }
-
   useEffect(() => {
     const handleMessage = (data) => {
       console.log(data);

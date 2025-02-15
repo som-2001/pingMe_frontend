@@ -2,17 +2,15 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Avatar,
   Typography,
   Button,
   Grid,
   Skeleton,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import ExploreIcon from "@mui/icons-material/Explore";
-
+import DynamicFeedIcon from "@mui/icons-material/DynamicFeed";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import ForumIcon from "@mui/icons-material/Forum";
@@ -24,9 +22,10 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { axiosReq } from "../axios/Axios";
 import toast from "react-hot-toast";
-import { NoChatsFound } from "../components/NoChatsFound";
 import { io } from "socket.io-client";
 import dayjs from "dayjs";
+import { MessageList } from "../components/Dashboard/MessageList";
+import { StatusComponent } from "../components/Dashboard/StatusComponent";
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
 
@@ -44,6 +43,12 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
   const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
+
+  const [value, setValue] = React.useState("one");
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   useEffect(() => {
     const room = `room_${sender_id}`;
@@ -129,9 +134,9 @@ export default function Dashboard() {
                 <AccountCircleIcon sx={{ fontSize: "2.2rem" }} />
               </Grid>
               <Grid item xs={10} onClick={(e) => navigate("/profile")}>
-                <Typography variant="body1">Go To Profile</Typography>
+                <Typography variant="body1">Profile</Typography>
                 <Typography variant="body2">
-                  In profile you can update your profile image, descriptions,
+                  Update your photo, description,
                   about and other stuffs.
                 </Typography>
               </Grid>
@@ -139,167 +144,81 @@ export default function Dashboard() {
           </Box>
         </Box>
       </Box>
-
-      {/* Main content with People List */}
       <Box
         className={styles.mainContent}
         sx={{ height: { xs: "100vh", lg: "90vh" } }}
       >
         <Box className={styles.mainHeaderContainer}>
-          <ForumIcon className={styles.mainIcon} />
-          <Typography variant="h5" className={styles.header}>
-            Messages
-          </Typography>
+          <Tabs
+            sx={{ width: "100%" }}
+            value={value}
+            onChange={handleChange}
+            indicatorColor="secondary"
+            textColor="inherit"
+            variant="fullWidth"
+            aria-label="full width tabs example"
+          >
+            <Tab
+              value="one"
+              icon={<ForumIcon className={styles.mainIcon} />}
+              iconPosition="start"
+              label="Messages"
+            />
+            <Tab
+              value="two"
+              icon={<DynamicFeedIcon className={styles.mainIcon} />}
+              iconPosition="start"
+              label="Status"
+            />
+          </Tabs>
         </Box>
-        {load ? (
-          Array.from({ length: 5 }).map((data, index) => (
-            <Box
-              className={styles.Skeleton}
-              sx={{
-                width: { xs: "270px", sm: "auto" },
-              }}
-            >
-              <Box className={styles.flexSkeleton}>
-                <Skeleton
-                  variant="circular"
-                  width={48}
-                  height={48}
-                  sx={{ marginRight: "16px" }}
-                />
-                <Box>
-                  <Skeleton variant="text" width="120px" height={20} />
+        {value === "one" ? (
+          load ? (
+            Array.from({ length: 5 }).map((data, index) => (
+              <Box
+                className={styles.Skeleton}
+                sx={{
+                  width: { xs: "270px", sm: "auto" },
+                }}
+              >
+                <Box className={styles.flexSkeleton}>
                   <Skeleton
-                    variant="text"
-                    width="200px"
-                    height={20}
-                    sx={{ marginTop: "8px" }}
+                    variant="circular"
+                    width={48}
+                    height={48}
+                    sx={{ marginRight: "16px" }}
                   />
-                </Box>
-              </Box>
-              <Skeleton
-                variant="text"
-                width={40}
-                height={20}
-                sx={{ marginTop: "-20px" }}
-              />
-            </Box>
-          ))
-        ) : (
-          <List className={styles.list}>
-            {users?.length === 0 ? (
-              <NoChatsFound />
-            ) : (
-              users.map((user) => (
-                <ListItem
-                  key={user.id}
-                  className={`${styles.listItem} ${
-                    selectedUser?.id === user.id ? styles.selected : ""
-                  }`}
-                  onClick={() => {
-                    navigate(
-                      `/chat/${
-                        user.sender._id === sender_id
-                          ? user.receiver?._id
-                          : user.sender?._id
-                      }`,
-                      {
-                        state: {
-                          userDetails:
-                            user.sender._id === sender_id
-                              ? user.receiver
-                              : user.sender,
-                        },
-                      }
-                    );
-                    setSelectedUser(user);
-                  }}
-                >
-                  <ListItemAvatar>
-                    <Avatar
-                      src={
-                        user.sender._id === sender_id
-                          ? user.receiver?.profileImage
-                          : user.sender?.profileImage
-                      }
-                      className={styles.avatar}
+                  <Box>
+                    <Skeleton variant="text" width="120px" height={20} />
+                    <Skeleton
+                      variant="text"
+                      width="200px"
+                      height={20}
+                      sx={{ marginTop: "8px" }}
                     />
-                  </ListItemAvatar>
-                  <ListItemText
-                    sx={{ padding: "10px" }}
-                    primary={
-                      <span className={styles.flexContainer}>
-                        {user.sender._id === sender_id
-                          ? user.receiver?.username
-                          : user.sender?.username}
-                        <Typography variant="body2">
-                          {dayjs().diff(
-                            dayjs(user.sortedComments.createdAt),
-                            "hours"
-                          ) < 24
-                            ? dayjs(user.sortedComments.createdAt).format(
-                                "h:mm A"
-                              )
-                            : dayjs(user.sortedComments.createdAt).format(
-                                "DD/MM/YY"
-                              )}
-                        </Typography>
-                      </span>
-                    }
-                    secondary={
-                      user?.sortedComments?.message.startsWith(
-                        "https://res.cloudinary.com/dpacclyw4/image"
-                      ) ? (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: "2px",
+                  </Box>
+                </Box>
+                <Skeleton
+                  variant="text"
+                  width={40}
+                  height={20}
+                  sx={{ marginTop: "-20px" }}
+                />
+              </Box>
+            ))
+          ) : (
+            <List className={styles.list}>
+              <MessageList
+                users={users}
+                sender_id={sender_id}
+                selectedUser={selectedUser}
+                setSelectedUser={setSelectedUser}
+              />
+            </List>
+          )
+        ) : null}
 
-                            alignItems: "center",
-                          }}
-                        >
-                          <span style={{ fontSize: "11px" }}>
-                            {user?.sortedComments?.sender_id === sender_id
-                              ? "you"
-                              : user?.sortedComments?.username}
-                          </span>
-                          :
-                          <img
-                            src={user?.sortedComments?.message}
-                            alt=""
-                            style={{
-                              width: "30px",
-                              height: "30px",
-                              objectFit: "contain",
-                              borderRadius: "10px",
-                            }}
-                          />
-                        </Box>
-                      ) : user?.sortedComments?.message?.length > 100 ? (
-                        `${user?.sortedComments?.message.slice(0, 100)}...`
-                      ) : (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            gap: "2px",
-
-                            alignItems: "center",
-                          }}
-                        >
-                          <span style={{ fontSize: "11px" }}>
-                            {user?.sortedComments?.sender_id === sender_id
-                              ? "you"
-                              : user?.sortedComments?.username}
-                          </span>
-                          :{<span style={{ fontSize: "11px" }}>{user?.sortedComments?.message}</span>}
-                        </Box>
-                      )
-                    }
-                  />
-                </ListItem>
-              ))
-            )}
-          </List>
-        )}
+        {value === "two" ? <StatusComponent /> : null}
       </Box>
 
       <ExploreUsersModal
