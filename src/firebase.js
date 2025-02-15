@@ -38,19 +38,19 @@ export const requestNotificationPermission = async () => {
 onMessage(messaging, (payload) => {
   console.log("📩 Foreground Notification Received:", payload);
 
-  const notificationTitle = payload.notification?.title || "New Notification";
-  const notificationOptions = {
-    body: payload.notification?.body || "You have a new message.",
-    icon: payload.data?.profileImg || "/default-user.png",
-    data: {
-      url: payload.data?.url || "/",
-      username: payload.data?.username || "Unknown",
-      profileImg: payload.data?.profileImg || "/default-user.png",
-    },
-  };
+  // const notificationTitle = payload.notification?.title || "New Notification";
+  // const notificationOptions = {
+  //   body: payload.notification?.body || "You have a new message.",
+  //   icon: payload.data?.profileImg || "/default-user.png",
+  //   data: {
+  //     url: payload.data?.url || "/",
+  //     username: payload.data?.username || "Unknown",
+  //     profileImg: payload.data?.profileImg || "/default-user.png",
+  //   },
+  // };
 
   // Show notification manually
-  if (Notification.permission === "granted") {
-    new Notification(notificationTitle, notificationOptions);
-  }
+  // if (Notification.permission === "granted") {
+  //   new Notification(notificationTitle, notificationOptions);
+  // }
 });
