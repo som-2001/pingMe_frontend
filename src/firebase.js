@@ -24,6 +24,13 @@ if ("serviceWorker" in navigator && "PushManager" in window) {
 export const requestNotificationPermission = async () => {
   if (!messaging) return null;
   try {
+    // Request notification permission explicitly
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") {
+      console.error("❌ Notification permission not granted or blocked.");
+      return null;
+    }
+
     const token = await getToken(messaging, {
       vapidKey:
         "BHWpJTjY9zui56PdnGkYh5qOk28wcYdxH0iipBYK3XzWKF3iCC1n4zhcKJNeZqk5op1CAEr9p164jp2LPNXHHwU",
@@ -34,6 +41,7 @@ export const requestNotificationPermission = async () => {
     console.error("❌ Error getting FCM token:", error);
   }
 };
+
 
 onMessage(messaging, (payload) => {
   console.log("📩 Foreground Notification Received:", payload);
