@@ -35,28 +35,25 @@ if (self.firebase) {
   // Handle background push notifications
   messaging.onBackgroundMessage((payload) => {
     console.log("📩 Background Notification Received:", payload);
-  
-    // Support both notification and data payloads
-    const notificationTitle =
-      payload.data?.title || "New Notification";
+
+    const notificationTitle = payload.data?.title || "New Notification";
     const notificationOptions = {
       body: payload.data?.body || "You have a new message.",
-      icon: payload.data?.icon || "/logo.webp",
+      icon: "/logo.webp",
       data: {
         url: payload.data?.url || "/",
         username: payload.data?.username || "Unknown",
         profileImg: payload.data?.profileImg || "/default-user.png",
       },
     };
-  
-    // Show the notification
-    if (self.registration && self.registration.showNotification) {
-      self.registration.showNotification(notificationTitle, notificationOptions);
-    } else {
-      console.error("❌ Service worker registration not found.");
+
+    self.registration.showNotification(notificationTitle, notificationOptions);
+
+    if (payload.notification) {
+      // Skip showing any notification
+      return;
     }
   });
-  
 
   self.addEventListener("notificationclick", (event) => {
     console.log("🔔 Notification Clicked:", event.notification.data);
