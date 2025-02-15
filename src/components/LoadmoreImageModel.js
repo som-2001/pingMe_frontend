@@ -1,6 +1,7 @@
 import { Box, Button, Grid, Modal, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import styles1 from "../styles/Dashboard.module.css";
+
 import dayjs from "dayjs";
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
@@ -48,20 +49,22 @@ export const LoadMoreImageModel = ({
           </Typography>
         ) : (
           <>
-            <Grid container className={styles1.centerButton}>
-              {mediaArray.map((data, index) => (
-                <Grid item xs={3}>
-                  <img
-                    src={data.message}
-                    alt=""
-                    style={{
-                      width: "140px",
-                      height: "140px",
-                      objectFit: "contain",
-                    }}
-                  />
-                </Grid>
-              ))}
+            <Grid container className={styles1.centerButton} spacing={1}>
+              
+                {mediaArray.map((data, index) => (
+                  <Grid item xs={4}>
+                    <img
+                      src={data.message}
+                      alt=""
+                      style={{
+                        width: "140px",
+                        height: "140px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </Grid>
+                ))}
+              
             </Grid>
             {page < total && (
               <Button className={styles1.exploreButton} onClick={loadMore}>

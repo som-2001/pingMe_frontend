@@ -63,11 +63,30 @@ export const Chat = () => {
   const [type, setType] = useState("stop_typing");
   const [userDetailsLoad, setUserDetailsLoad] = useState(true);
   const [last_seen, setLast_seen] = useState("");
+  const [fetchImage, setFetchImage] = useState(false);
+  const [updatedMedia, setUpdatedMedia] = useState([]);
 
   const clickTheImageIcon = () => {
     imageRef.current.click();
   };
 
+  useEffect(() => {
+    axiosReq
+      .post("/chat/getMedia", {
+        senderId: sender_id,
+        receiverId: id,
+        page: page,
+      })
+      .then((res) => {
+        setUpdatedMedia(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        // setMediaLoad(false);
+      });
+  }, [page]);
   useEffect(() => {
     axiosReq
       .post("/chat/get-messages", {
@@ -224,7 +243,8 @@ export const Chat = () => {
           },
         });
 
-        console.log(response.data);
+        setFetchImage(!fetchImage);
+
         if (response.status === 200) {
           handleClosePopover();
           socket.emit("message", {
@@ -235,6 +255,15 @@ export const Chat = () => {
             createdAt: createdAt,
             profileImg: profileImg,
           });
+          console.log(response.data);
+          setUpdatedMedia((prevUpdatedMedia) => [
+            {
+              message: response.data,
+              createdAt: createdAt,
+              username: username,
+            },
+            ...prevUpdatedMedia,
+          ]);
         }
       } catch (error) {
         console.error("Upload failed:", error);
@@ -369,6 +398,8 @@ export const Chat = () => {
         receiverId={id}
         senderId={sender_id}
         load={userDetailsLoad}
+        updatedMedia={updatedMedia}
+        setUpdatedMedia={setUpdatedMedia}
       />
 
       <Grid item xs={12} sm={6} md={8} lg={8}>

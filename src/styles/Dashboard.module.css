@@ -32,7 +32,12 @@
   border-radius: 10px;
   /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
 }
-
+.flexImg{
+  display: flex !important;
+  gap: 1px !important;
+  flex-direction: row !important;
+  flex-wrap: wrap;
+}
 .sidebarHeader {
   display: flex;
   align-items: center;
@@ -197,16 +202,15 @@
   justify-content: center;
 }
 .centerButton {
-  display: flex;
-  /* justify-content: center; */
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .modalContent {
   background: white;
   padding: 30px;
   width: 80%;
-  max-width: 500px;
+  max-width: 516px;
   border-radius: 10px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);

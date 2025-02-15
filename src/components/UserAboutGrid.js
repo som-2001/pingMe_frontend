@@ -13,7 +13,6 @@ export const UserAboutGrid = ({
   profileImg,
   username1,
   about,
-
   description,
   address,
   phone,
@@ -21,8 +20,10 @@ export const UserAboutGrid = ({
   receiverId,
   senderId,
   load,
+  updatedMedia
 }) => {
   const [mediaArray, setMediaArray] = useState([]);
+ 
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [mediaLoad, setMediaLoad] = useState(true);
@@ -133,7 +134,7 @@ export const UserAboutGrid = ({
           <Box sx={{ p: 1.2, width: "97%" }}>
             <Box className={styles.flexMediaButtons}>
               <Typography variant="body1" className={styles.sectionTitle}>
-                Media ({totalLength})
+                Media ({(totalLength+updatedMedia.length)-4})
               </Typography>
 
               <ArrowForwardIosIcon
@@ -155,7 +156,7 @@ export const UserAboutGrid = ({
               </Typography>
             ) : (
               <Box className={styles.flexImg}>
-                {mediaArray?.slice(0, 4)?.map((data, index) => (
+                {updatedMedia?.slice(0, 4)?.map((data, index) => (
                   <img
                     key={index}
                     src={data.message}
