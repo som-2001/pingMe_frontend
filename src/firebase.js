@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken } from "firebase/messaging";
+import { getMessaging, getToken,onMessage } from "firebase/messaging";
 
 // Firebase config
 const firebaseConfig = {
@@ -34,3 +34,23 @@ export const requestNotificationPermission = async () => {
     console.error("❌ Error getting FCM token:", error);
   }
 };
+
+onMessage(messaging, (payload) => {
+  console.log("📩 Foreground Notification Received:", payload);
+
+  const notificationTitle = payload.notification?.title || "New Notification";
+  const notificationOptions = {
+    body: payload.notification?.body || "You have a new message.",
+    icon: payload.data?.profileImg || "/default-user.png",
+    data: {
+      url: payload.data?.url || "/",
+      username: payload.data?.username || "Unknown",
+      profileImg: payload.data?.profileImg || "/default-user.png",
+    },
+  };
+
+  // Show notification manually
+  if (Notification.permission === "granted") {
+    new Notification(notificationTitle, notificationOptions);
+  }
+});
