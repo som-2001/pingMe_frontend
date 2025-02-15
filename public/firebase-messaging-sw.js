@@ -48,7 +48,7 @@ if (self.firebase) {
       },
     };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    self.registration.showNotification(notificationOptions);
 
     if (payload.notification) {
       // Skip showing any notification
