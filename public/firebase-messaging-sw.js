@@ -1,6 +1,10 @@
 // Import Firebase SDKs (Compatibility mode)
-importScripts("https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.0.0/firebase-messaging-compat.js");
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"
+);
+importScripts(
+  "https://www.gstatic.com/firebasejs/10.0.0/firebase-messaging-compat.js"
+);
 
 self.addEventListener("install", (event) => {
   console.log("🛠 Service Worker installing...");
@@ -32,38 +36,44 @@ if (self.firebase) {
   messaging.onBackgroundMessage((payload) => {
     console.log("📩 Background Notification Received:", payload);
 
-    const notificationTitle = payload.notification?.title || "New Notification";
-    const notificationOptions = {
-      body: payload.notification?.body || "You have a new message.",
-      icon: payload.data?.profileImg,
-      data: {
-        url: payload.data?.url || "/",
-        username: payload.data?.username || "Unknown",
-        profileImg: payload.data?.profileImg || "/default-user.png",
-      },
-    };
-    
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    // const notificationTitle = payload.notification?.title || "New Notification";
+    // const notificationOptions = {
+    //   body: payload.notification?.body || "You have a new message.",
+    //   icon: payload.data?.profileImg,
+    //   data: {
+    //     url: payload.data?.url || "/",
+    //     username: payload.data?.username || "Unknown",
+    //     profileImg: payload.data?.profileImg || "/default-user.png",
+    //   },
+    // };
+
+    // self.registration.showNotification(notificationTitle, notificationOptions);
+
+    if (payload.notification) {
+      // Skip showing any notification
+      return;
+    }
   });
 
   self.addEventListener("notificationclick", (event) => {
     console.log("🔔 Notification Clicked:", event.notification.data);
-  
+
     const url = event.notification.data?.url || "/"; // Default to home if no URL
     event.notification.close();
-  
+
     event.waitUntil(
-      clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
-        for (const client of clientList) {
-          if (client.url === url && "focus" in client) {
-            return client.focus();
+      clients
+        .matchAll({ type: "window", includeUncontrolled: true })
+        .then((clientList) => {
+          for (const client of clientList) {
+            if (client.url === url && "focus" in client) {
+              return client.focus();
+            }
           }
-        }
-        if (clients.openWindow) return clients.openWindow(url);
-      })
+          if (clients.openWindow) return clients.openWindow(url);
+        })
     );
   });
-  
 } else {
   console.error("❌ Firebase SDK failed to load in service worker.");
 }
