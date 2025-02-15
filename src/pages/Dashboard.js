@@ -43,7 +43,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
   const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
-  const [reRender, setReRender] = useState(false);
   const [value, setValue] = React.useState("one");
 
   const handleChange = (event, newValue) => {
@@ -139,8 +138,11 @@ export default function Dashboard() {
                 createdAt: data.createdAt,
               },
               sender: {
-                username: data.username,
+                _id: sender_id,
               },
+              receiver:{
+                _id:data.sender_id
+              }
             },
           ];
         }
