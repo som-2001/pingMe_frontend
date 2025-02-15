@@ -41,6 +41,7 @@ if (self.firebase) {
       body: payload.data?.body || "You have a new message.",
       icon: "/logo.webp",
       data: {
+        title:payload.data.title,
         url: payload.data?.url || "/",
         username: payload.data?.username || "Unknown",
         profileImg: payload.data?.profileImg || "/default-user.png",
