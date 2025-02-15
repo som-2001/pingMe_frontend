@@ -372,7 +372,9 @@ export const Chat = () => {
       />
 
       <Grid item xs={12} sm={6} md={8} lg={8}>
-      <Box className={styles.header}>
+        <Box className={styles.chatContainer}>
+          <Box>
+            <Box className={styles.header}>
               {progress > 0 && (
                 <progress
                   value={progress}
@@ -381,7 +383,7 @@ export const Chat = () => {
                     position: "absolute",
                     top: "10%",
                     zIndex: 100,
-                    left: "50%",
+                    left: "60%",
                   }}
                 />
               )}
@@ -434,9 +436,9 @@ export const Chat = () => {
                 </Typography>
               </span>
             </Box>
-        <Box className={styles.chatContainer} >
-      
-          <ScrollToBottom className={styles.messagesContainer} behavior="auto" >
+          </Box>
+
+          <ScrollToBottom className={styles.messagesContainer} behavior="auto">
             <center>
               <Box sx={{ backgroundColor: "transparent", my: 1 }}>
                 <Box>{load && <CircularProgress />}</Box>
@@ -463,7 +465,7 @@ export const Chat = () => {
             ) : (
               messages.map((msg, index) =>
                 msg.sender_id === sender_id ? (
-                  <Box key={index} className={styles.RightmessageBubble} >
+                  <Box key={index} className={styles.RightmessageBubble}>
                     <Typography variant="body2">
                       {msg.message.startsWith("https://res.cloudinary.com") ? (
                         <img

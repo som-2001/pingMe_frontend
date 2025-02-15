@@ -25,11 +25,8 @@
   padding: 16px;
   background: #ffffff;
   border-bottom: 1px solid #ddd;
+
   transition: background 0.3s ease;
-  position: fixed;
-  top: 0px;
-  z-index: 100;
-  width: 100%;
 }
 
 .header:hover {
@@ -63,7 +60,6 @@
   padding: 20px;
   overflow-y: auto;
   background: #f0f2f5;
-  margin-top: 73px;
 }
 
 .flexMediaButtons{
@@ -89,8 +85,8 @@
 .RightmessageBubble {
   background: #292929;
   color: white;
-  margin-bottom: 5px;
-  padding: 10px;
+  margin-bottom: 15px;
+  padding: 15px;
   border-radius: 12px 12px 0px 12px;
   box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.05);
   min-width: 70px;
@@ -104,8 +100,8 @@
 
 .LeftmessageBubble {
   background: #ffffff;
-  margin-bottom: 5px;
-  padding: 10px;
+  margin-bottom: 15px;
+  padding: 15px;
   border-radius: 15px 15px 15px 0px;
   min-width: 70px;
   max-width: 280px;
@@ -415,6 +411,5 @@
   .chatContainer {
     max-width: 100%;
     height: 100vh;
-   
   }
 }
