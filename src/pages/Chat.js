@@ -383,7 +383,7 @@ export const Chat = () => {
                     position: "absolute",
                     top: "10%",
                     zIndex: 100,
-                    left: "60%",
+                    left: "40%",
                   }}
                 />
               )}
@@ -474,8 +474,9 @@ export const Chat = () => {
                           style={{
                             width: "240px",
                             height: "240px",
-                            objectFit: "contain",
+                            objectFit: "cover",
                             cursor: "pointer",
+                            borderRadius: "10px",
                           }}
                           onClick={(e) => ImageView(msg)}
                         />
@@ -500,8 +501,9 @@ export const Chat = () => {
                             style={{
                               width: "240px",
                               height: "240px",
-                              objectFit: "contain",
+                              objectFit: "cover",
                               cursor: "pointer",
+                              borderRadius: "10px",
                             }}
                             onClick={(e) => ImageView(msg)}
                           />
@@ -570,7 +572,7 @@ export const Chat = () => {
         }}
       >
         <Box className={styles.popoverContent}>
-          <Button component="label">
+          <Button component="label" disabled={progress > 0}>
             <input
               type="file"
               hidden
@@ -582,9 +584,9 @@ export const Chat = () => {
               <ImageIcon />
             </IconButton>
           </Button>
-          <IconButton title="Attach Video">
+          {/* <IconButton title="Attach Video">
             <VideocamIcon onClick={clickTheImageIcon} />
-          </IconButton>
+          </IconButton> */}
         </Box>
       </Popover>
 

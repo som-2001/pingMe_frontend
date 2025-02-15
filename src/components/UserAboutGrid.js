@@ -154,20 +154,22 @@ export const UserAboutGrid = ({
                 No Media found.
               </Typography>
             ) : (
-              mediaArray?.slice(0, 4)?.map((data, index) => (
-                <img
-                  key={index}
-                  src={data.message}
-                  alt=""
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit: "contain",
-                    cursor: "pointer",
-                  }}
-                  onClick={(e) => handleImage(data)}
-                />
-              ))
+              <Box className={styles.flexImg}>
+                {mediaArray?.slice(0, 4)?.map((data, index) => (
+                  <img
+                    key={index}
+                    src={data.message}
+                    alt=""
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "contain",
+                      cursor: "pointer",
+                    }}
+                    onClick={(e) => handleImage(data)}
+                  />
+                ))}
+              </Box>
             )}
           </Box>
         </Box>

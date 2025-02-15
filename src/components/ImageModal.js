@@ -7,13 +7,13 @@ dayjs.extend(relativeTime);
 
 export const ImageModel = ({ open, setOpen, image }) => {
   const download = (e) => {
+    console.log(e.message);
     let a = document.createElement("a");
-    const link = e.message.blob();
-    const url = URL.createObjectURL(link);
-    a.href = url;
+    document.body.appendChild(a);
+    a.href = e.message;
     a.title = `pingMe_image_by_${e.username}`;
     a.download = `pingMe_image_by_${e.username}.jpg`;
-    document.body.appendChild(a);
+   
     a.click();
     document.body.removeChild(a);
   };

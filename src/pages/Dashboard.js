@@ -44,7 +44,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
   const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
-  
 
   useEffect(() => {
     const room = `room_${sender_id}`;
@@ -78,8 +77,17 @@ export default function Dashboard() {
       <Box className={styles.sidebar} sx={{ height: "fit-content" }}>
         <Box className={styles.sidebarHeader}>
           <DashboardIcon className={styles.headerIcon} />
-          <Typography variant="h6" className={styles.welcome}>
-            Welcome Back, {username}!
+          <Typography
+            variant="h6"
+            className={styles.welcome}
+            sx={{
+              fontSize: {
+                xs: "19px",
+                sm: "1.5rem",
+              },
+            }}
+          >
+            Welcome, {username}!
           </Typography>
         </Box>
         <Typography variant="body1" className={styles.description}>
@@ -241,20 +249,49 @@ export default function Dashboard() {
                       user?.sortedComments?.message.startsWith(
                         "https://res.cloudinary.com/dpacclyw4/image"
                       ) ? (
-                        <img
-                          src={user?.sortedComments?.message}
-                          alt=""
-                          style={{
-                            width: "30px",
-                            height: "30px",
-                            objectFit: "contain",
-                            borderRadius: "10px",
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: "2px",
+
+                            alignItems: "center",
                           }}
-                        />
+                        >
+                          <span style={{ fontSize: "11px" }}>
+                            {user?.sortedComments?.sender_id === sender_id
+                              ? "you"
+                              : user?.sortedComments?.username}
+                          </span>
+                          :
+                          <img
+                            src={user?.sortedComments?.message}
+                            alt=""
+                            style={{
+                              width: "30px",
+                              height: "30px",
+                              objectFit: "contain",
+                              borderRadius: "10px",
+                            }}
+                          />
+                        </Box>
                       ) : user?.sortedComments?.message?.length > 100 ? (
                         `${user?.sortedComments?.message.slice(0, 100)}...`
                       ) : (
-                        user?.sortedComments?.message
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: "2px",
+
+                            alignItems: "center",
+                          }}
+                        >
+                          <span style={{ fontSize: "11px" }}>
+                            {user?.sortedComments?.sender_id === sender_id
+                              ? "you"
+                              : user?.sortedComments?.username}
+                          </span>
+                          :{<span style={{ fontSize: "11px" }}>{user?.sortedComments?.message}</span>}
+                        </Box>
                       )
                     }
                   />
@@ -265,7 +302,12 @@ export default function Dashboard() {
         )}
       </Box>
 
-      <ExploreUsersModal open={open} setOpen={setOpen} socket={socket} username={username}/>
+      <ExploreUsersModal
+        open={open}
+        setOpen={setOpen}
+        socket={socket}
+        username={username}
+      />
     </Box>
   );
 }
