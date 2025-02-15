@@ -36,8 +36,9 @@ if (self.firebase) {
   messaging.onBackgroundMessage((payload) => {
     console.log("📩 Background Notification Received:", payload);
 
-    const notificationTitle = payload.data?.title || "New Notification";
+    // const notificationTitle = payload.data?.title || "New Notification";
     const notificationOptions = {
+      title:payload.data?.title,
       body: payload.data?.body || "You have a new message.",
       icon: "/logo.webp",
       data: {
@@ -58,9 +59,9 @@ if (self.firebase) {
   self.addEventListener("notificationclick", (event) => {
     console.log("🔔 Notification Clicked:", event.notification.data);
 
-    const url = event.notification.data?.url || "/"; // Default to home if no URL
-    event.notification.close();
+    const url = event.notification.data?.url || "/"; 
 
+    event.notification.close();
     event.waitUntil(
       clients
         .matchAll({ type: "window", includeUncontrolled: true })
@@ -74,6 +75,7 @@ if (self.firebase) {
         })
     );
   });
+
 } else {
   console.error("❌ Firebase SDK failed to load in service worker.");
 }
