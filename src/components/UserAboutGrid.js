@@ -20,10 +20,10 @@ export const UserAboutGrid = ({
   receiverId,
   senderId,
   load,
-  updatedMedia
+  updatedMedia,
 }) => {
   const [mediaArray, setMediaArray] = useState([]);
- 
+
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [mediaLoad, setMediaLoad] = useState(true);
@@ -41,8 +41,8 @@ export const UserAboutGrid = ({
       })
       .then((res) => {
         setMediaArray([...mediaArray, ...res.data.data]);
-        setTotal(res.data.totalPages);
-        setTotalLength(res.data.totalMedia);
+        setTotal(res.data.totalPages || 0);
+        setTotalLength(res.data.totalMedia || 4);
       })
       .catch((err) => {
         console.log(err);
@@ -134,7 +134,12 @@ export const UserAboutGrid = ({
           <Box sx={{ p: 1.2, width: "97%" }}>
             <Box className={styles.flexMediaButtons}>
               <Typography variant="body1" className={styles.sectionTitle}>
-                Media ({(totalLength+updatedMedia.length)-4})
+                Media{" "}
+                {mediaLoad ? (
+                  <Skeleton animation="wave" width={40} />
+                ) : (
+                  `${totalLength + updatedMedia.length - 4}`
+                )}
               </Typography>
 
               <ArrowForwardIosIcon
