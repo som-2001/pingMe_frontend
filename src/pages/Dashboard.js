@@ -43,7 +43,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
   const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
-
+  const [reRender, setReRender] = useState(false);
   const [value, setValue] = React.useState("one");
 
   const handleChange = (event, newValue) => {
@@ -66,7 +66,7 @@ export default function Dashboard() {
       .post("/chat/get-chats", { sender_id: sender_id })
       .then((res) => {
         console.log(res.data);
-        setUsers((prevUsers) => [...prevUsers, ...res.data.users]);
+        setUsers(res.data.users);
         // setTotal(res.data.total);
       })
       .catch((err) => {
@@ -77,6 +77,90 @@ export default function Dashboard() {
         setLoad(false);
       });
   }, [sender_id]);
+
+  // useEffect(() => {
+  //   const DashboardMessage = (data) => {
+  //     toast.success(`${data.username}:${data.message}`);
+
+  //     setLoad(true);
+  //     axiosReq
+  //       .post("/chat/get-chats", { sender_id: sender_id })
+  //       .then((res) => {
+  //         console.log(res.data);
+  //         setUsers(res.data.users);
+  //         // setTotal(res.data.total);
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //         toast.error(err?.response?.data?.message);
+  //       })
+  //       .finally(() => {
+  //         setLoad(false);
+  //       });
+  //   };
+
+  //   socket.on("dashboard_message", DashboardMessage);
+  //   return () => {
+  //     socket.off("dashboard_message", DashboardMessage);
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    const DashboardMessage = (data) => {
+      toast.success(`${data.username}: ${data.message}`);
+  
+      setUsers((prevUsers) => {
+        const userIndex = prevUsers.findIndex(
+          (user) => user.sender_id === data.sender_id
+        );
+  
+        let updatedUsers;
+  
+        if (userIndex !== -1) {
+          // Update the existing user with the new message
+          updatedUsers = [...prevUsers];
+          updatedUsers[userIndex] = {
+            ...updatedUsers[userIndex],
+            sortedComments: {
+              ...updatedUsers[userIndex].sortedComments,
+              message: data.message,
+              createdAt: data.createdAt,
+            },
+          };
+        } else {
+          // Add the new user if not found (in case of a new conversation)
+          updatedUsers = [
+            ...prevUsers,
+            {
+              sender_id: data.sender_id,
+              sortedComments: {
+                message: data.message,
+                username: data.username,
+                createdAt: data.createdAt,
+              },
+              sender: {
+                username: data.username,
+              },
+            },
+          ];
+        }
+  
+        return updatedUsers.sort(
+          (a, b) =>
+            new Date(b.sortedComments.createdAt) -
+            new Date(a.sortedComments.createdAt)
+        );
+      });
+    };
+  
+    socket.on("dashboard_message", DashboardMessage);
+  
+    return () => {
+      socket.off("dashboard_message", DashboardMessage);
+    };
+  }, []);
+  
+  
   return (
     <Box className={styles.dashboardContainer}>
       <Box className={styles.sidebar} sx={{ height: "fit-content" }}>
@@ -136,8 +220,7 @@ export default function Dashboard() {
               <Grid item xs={10} onClick={(e) => navigate("/profile")}>
                 <Typography variant="body1">Profile</Typography>
                 <Typography variant="body2">
-                  Update your photo, description,
-                  about and other stuffs.
+                  Update your photo, description, about and other stuffs.
                 </Typography>
               </Grid>
             </Grid>
