@@ -38,9 +38,9 @@ if (self.firebase) {
   
     // Support both notification and data payloads
     const notificationTitle =
-      payload.notification?.title || payload.data?.title || "New Notification";
+      payload.data?.title || "New Notification";
     const notificationOptions = {
-      body: payload.notification?.body || payload.data?.body || "You have a new message.",
+      body: payload.data?.body || "You have a new message.",
       icon: payload.data?.icon || "/logo.webp",
       data: {
         url: payload.data?.url || "/",

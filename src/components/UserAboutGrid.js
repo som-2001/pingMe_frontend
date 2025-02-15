@@ -138,7 +138,11 @@ export const UserAboutGrid = ({
                 {mediaLoad ? (
                   <Skeleton animation="wave" width={40} />
                 ) : (
-                  `${totalLength + updatedMedia.length - 4}`
+                  `(${
+                    totalLength + updatedMedia.length - 4 < 0
+                      ? "0"
+                      : totalLength + updatedMedia.length - 4
+                  })`
                 )}
               </Typography>
 
