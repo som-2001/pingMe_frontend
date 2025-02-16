@@ -128,8 +128,8 @@ export const MessageList = ({
                 </span>
                 <Typography variant="body2">
                   {user?.unread?.count===0 ? null: user?.unread?.id === sender_id
-                    ? `${user?.unread?.count} unseen`
-                    : user?.unread?.count}
+                    ? <span className={styles.unseen_badge}>{user?.unread?.count} unseen</span>
+                    : <span className={styles.unread_badge}>{user?.unread?.count}</span>}
                 </Typography>
               </Box>
             ) : (
@@ -152,10 +152,10 @@ export const MessageList = ({
                     {user?.sortedComments?.message}
                   </span>
                   
-                  <Typography variant="body2">
+                   <Typography variant="body2">
                   {user?.unread?.count===0 ? null: user?.unread?.id === sender_id
-                    ? `${user?.unread?.count} unseen`
-                    : user?.unread?.count}
+                    ? <span className={styles.unseen_badge}>{user?.unread?.count} unseen</span>
+                    : <span className={styles.unread_badge}>{user?.unread?.count}</span>}
                 </Typography>
                 
               </Box>
