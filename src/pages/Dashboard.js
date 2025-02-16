@@ -77,33 +77,6 @@ export default function Dashboard() {
       });
   }, [sender_id]);
 
-  // useEffect(() => {
-  //   const DashboardMessage = (data) => {
-  //     toast.success(`${data.username}:${data.message}`);
-
-  //     setLoad(true);
-  //     axiosReq
-  //       .post("/chat/get-chats", { sender_id: sender_id })
-  //       .then((res) => {
-  //         console.log(res.data);
-  //         setUsers(res.data.users);
-  //         // setTotal(res.data.total);
-  //       })
-  //       .catch((err) => {
-  //         console.error(err);
-  //         toast.error(err?.response?.data?.message);
-  //       })
-  //       .finally(() => {
-  //         setLoad(false);
-  //       });
-  //   };
-
-  //   socket.on("dashboard_message", DashboardMessage);
-  //   return () => {
-  //     socket.off("dashboard_message", DashboardMessage);
-  //   };
-  // }, []);
-
   useEffect(() => {
     const DashboardMessage = (data) => {
       toast.success(`${data.username}: ${data.message}`);
@@ -141,7 +114,9 @@ export default function Dashboard() {
                 _id: sender_id,
               },
               receiver:{
-                _id:data.sender_id
+                username:data.username,
+                _id:data.sender_id,
+                profileImage:data.profileImage
               }
             },
           ];

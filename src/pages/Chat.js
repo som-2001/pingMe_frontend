@@ -27,7 +27,7 @@ import ScrollToBottom from "react-scroll-to-bottom";
 import dayjs from "dayjs";
 import { UserAboutGrid } from "../components/UserAboutGrid";
 import { ImageModel } from "../components/ImageModal";
-import { ArrowDown } from "../components/ArrowDown";
+
 
 const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
   reconnection: true,
@@ -588,7 +588,7 @@ export const Chat = () => {
         </Box>
       </Popover>
 
-      <ArrowDown />
+     
       <ImageModel open={open1} setOpen={setOpen1} image={image} />
       {headerModalOpen && (
         <UserDetailsModal
