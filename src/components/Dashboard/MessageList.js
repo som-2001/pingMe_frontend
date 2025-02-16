@@ -26,19 +26,19 @@ export const MessageList = ({
       <ListItem
         key={user.id}
         className={`${styles.listItem} ${
-          selectedUser?.id === user.id ? styles.selected : ""
+          selectedUser?.id === user?.id ? styles.selected : ""
         }`}
         onClick={() => {
           navigate(
             `/chat/${
-              user.sender._id === sender_id
-                ? user.receiver?._id
-                : user.sender?._id
+              user?.sender?._id === sender_id
+                ? user?.receiver?._id
+                : user?.sender?._id
             }`,
             {
               state: {
                 userDetails:
-                  user.sender._id === sender_id ? user.receiver : user.sender,
+                  user?.sender?._id === sender_id ? user?.receiver : user?.sender,
               },
             }
           );
@@ -48,9 +48,9 @@ export const MessageList = ({
         <ListItemAvatar>
           <Avatar
             src={
-              user.sender._id === sender_id
-                ? user.receiver?.profileImage
-                : user.sender?.profileImage
+              user?.sender?._id === sender_id
+                ? user?.receiver?.profileImage
+                : user?.sender?.profileImage
             }
             className={styles.avatar}
           />
@@ -59,15 +59,18 @@ export const MessageList = ({
           sx={{ padding: "10px" }}
           primary={
             <span className={styles.flexContainer}>
-              {user.sender._id === sender_id
-                ? user.receiver?.username
-                : user.sender?.username}
-              <Typography variant="body2">
-                {dayjs().diff(dayjs(user.sortedComments.createdAt), "hours") <
-                24
-                  ? dayjs(user.sortedComments.createdAt).format("h:mm A")
-                  : dayjs(user.sortedComments.createdAt).format("DD/MM/YY")}
-              </Typography>
+              {user?.sender?._id === sender_id
+                ? user?.receiver?.username
+                : user?.sender?.username}
+             
+                <Typography variant="body2">
+                  {dayjs().diff(dayjs(user?.sortedComments?.createdAt), "hours") <
+                  24
+                    ? dayjs(user?.sortedComments?.createdAt).format("h:mm A")
+                    : dayjs(user?.sortedComments?.createdAt).format("DD/MM/YY")}
+                </Typography>
+                
+            
             </span>
           }
           secondary={
@@ -84,6 +87,8 @@ export const MessageList = ({
                 <span style={{ fontSize: "11px" }}>
                   {user?.sortedComments?.sender_id === sender_id
                     ? "you"
+                    : user?.sortedComments?.username.length > 15
+                    ? `${user?.sortedComments?.username?.slice(0, 15)}...`
                     : user?.sortedComments?.username}
                 </span>
                 :
@@ -97,6 +102,11 @@ export const MessageList = ({
                     borderRadius: "10px",
                   }}
                 />
+                <Typography variant="body2">
+                  {user?.unread?.count===0 ? null: user?.unread?.id === sender_id
+                    ? `${user?.unread?.count} unseen`
+                    : user?.unread?.count}
+                </Typography>
               </Box>
             ) : user?.sortedComments?.message?.length > 15 ? (
               <Box
@@ -114,8 +124,13 @@ export const MessageList = ({
                 </span>
                 :
                 <span style={{ fontSize: "11px" }}>
-                  {user?.sortedComments?.message.slice(0, 15)}...
+                  {user?.sortedComments?.message?.slice(0, 15)}...
                 </span>
+                <Typography variant="body2">
+                  {user?.unread?.count===0 ? null: user?.unread?.id === sender_id
+                    ? `${user?.unread?.count} unseen`
+                    : user?.unread?.count}
+                </Typography>
               </Box>
             ) : (
               <Box
@@ -132,11 +147,17 @@ export const MessageList = ({
                     : user?.sortedComments?.username.split(" ")[0]}
                 </span>
                 :
-                {
+                
                   <span style={{ fontSize: "11px" }}>
                     {user?.sortedComments?.message}
                   </span>
-                }
+                  
+                  <Typography variant="body2">
+                  {user?.unread?.count===0 ? null: user?.unread?.id === sender_id
+                    ? `${user?.unread?.count} unseen`
+                    : user?.unread?.count}
+                </Typography>
+                
               </Box>
             )
           }

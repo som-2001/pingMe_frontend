@@ -50,7 +50,6 @@ export default function Dashboard() {
   };
 
   // In your chat page component:
-  
 
   useEffect(() => {
     const room = `room_${sender_id}`;
@@ -61,6 +60,49 @@ export default function Dashboard() {
       username: username,
     });
   }, [sender_id, username]);
+
+
+  useEffect(() => {
+    const seen_message = (data) => {
+      setUsers((prevUsers) => {
+        const userIndex = prevUsers.findIndex(
+          (user) =>
+            user.sender_id === data.sender_id || user.receiver_id === data.sender_id
+        );
+  
+        if (userIndex !== -1) {
+          // Create a new array to avoid mutating the original state
+          const updatedUsers = [...prevUsers];
+  
+          // Update the user object with a new unread count
+          updatedUsers[userIndex] = {
+            ...updatedUsers[userIndex],
+            unread: {
+              ...updatedUsers[userIndex].unread,
+              count: 0, // Set unread count to 0
+            },
+            sortedComments: {
+              ...updatedUsers[userIndex].sortedComments, // Keep other properties as is
+            },
+          };
+  
+          // Return the updated state
+          return updatedUsers;
+        }
+  
+        // If user not found, return the previous state unchanged
+        return prevUsers;
+      });
+    };
+  
+    socket.on("seen_message", seen_message);
+  
+    return () => {
+      socket.off("seen_message", seen_message);
+    };
+  }, []);
+  
+  
 
   useEffect(() => {
     setLoad(true);
@@ -82,20 +124,24 @@ export default function Dashboard() {
 
   useEffect(() => {
     const DashboardMessage = (data) => {
-      toast.success(`${data.username}: ${data.message}`);
-
+     
       setUsers((prevUsers) => {
         const userIndex = prevUsers.findIndex(
-          (user) => user.sender_id === data.sender_id || user.receiver_id === data.sender_id
+          (user) =>
+            user.sender_id === data.sender_id ||
+            user.receiver_id === data.sender_id
         );
 
-        console.log("sender_id_from_dashboard",data.sender_id,sender_id);
         let updatedUsers;
 
         if (userIndex !== -1) {
           updatedUsers = [...prevUsers];
           updatedUsers[userIndex] = {
             ...updatedUsers[userIndex],
+            unread: {
+              ...updatedUsers[userIndex].unread,
+              count: updatedUsers?.[userIndex]?.unread?.count + 1,
+            },
             sortedComments: {
               ...updatedUsers[userIndex].sortedComments,
               message: data.message,
@@ -107,6 +153,10 @@ export default function Dashboard() {
             ...prevUsers,
             {
               sender_id: data.sender_id,
+              unread: {
+                ...updatedUsers[userIndex].unread,
+                count: updatedUsers?.[userIndex]?.unread?.count + 1,
+              },
               sortedComments: {
                 message: data.message,
                 username: data.username,
