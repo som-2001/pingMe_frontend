@@ -49,6 +49,9 @@ export default function Dashboard() {
     setValue(newValue);
   };
 
+  // In your chat page component:
+  
+
   useEffect(() => {
     const room = `room_${sender_id}`;
 
@@ -80,16 +83,16 @@ export default function Dashboard() {
   useEffect(() => {
     const DashboardMessage = (data) => {
       toast.success(`${data.username}: ${data.message}`);
-  
+
       setUsers((prevUsers) => {
         const userIndex = prevUsers.findIndex(
           (user) => user.sender_id === data.sender_id
         );
-  
+
+        console.log("sender_id_from_dashboard",data.sender_id,sender_id);
         let updatedUsers;
-  
+
         if (userIndex !== -1) {
-        
           updatedUsers = [...prevUsers];
           updatedUsers[userIndex] = {
             ...updatedUsers[userIndex],
@@ -100,7 +103,6 @@ export default function Dashboard() {
             },
           };
         } else {
-         
           updatedUsers = [
             ...prevUsers,
             {
@@ -113,15 +115,15 @@ export default function Dashboard() {
               sender: {
                 _id: sender_id,
               },
-              receiver:{
-                username:data.username,
-                _id:data.sender_id,
-                profileImage:data.profileImage
-              }
+              receiver: {
+                username: data.username,
+                _id: data.sender_id,
+                profileImage: data.profileImage,
+              },
             },
           ];
         }
-  
+
         return updatedUsers.sort(
           (a, b) =>
             new Date(b.sortedComments.createdAt) -
@@ -129,15 +131,14 @@ export default function Dashboard() {
         );
       });
     };
-  
+
     socket.on("dashboard_message", DashboardMessage);
-  
+
     return () => {
       socket.off("dashboard_message", DashboardMessage);
     };
   }, []);
-  
-  
+
   return (
     <Box className={styles.dashboardContainer}>
       <Box className={styles.sidebar} sx={{ height: "fit-content" }}>

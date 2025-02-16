@@ -28,7 +28,6 @@ import dayjs from "dayjs";
 import { UserAboutGrid } from "../components/UserAboutGrid";
 import { ImageModel } from "../components/ImageModal";
 
-
 const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
   reconnection: true,
   reconnectionAttempts: 5,
@@ -176,6 +175,17 @@ export const Chat = () => {
       socket.off("typing_event", handleTypeEvent);
     };
   });
+
+  //leave room
+  useEffect(() => {
+    const leaveRoom = () => {
+      socket.emit("leave_room");
+    };
+
+    return () => {
+      leaveRoom();
+    };
+  }, []);
 
   // Opens the attachment popover
   const handleAttachClick = (event) => {
@@ -588,7 +598,6 @@ export const Chat = () => {
         </Box>
       </Popover>
 
-     
       <ImageModel open={open1} setOpen={setOpen1} image={image} />
       {headerModalOpen && (
         <UserDetailsModal
