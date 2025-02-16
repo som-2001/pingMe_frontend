@@ -86,7 +86,7 @@ export default function Dashboard() {
 
       setUsers((prevUsers) => {
         const userIndex = prevUsers.findIndex(
-          (user) => user.sender_id === data.sender_id
+          (user) => user.sender_id === data.sender_id || user.receiver_id === data.sender_id
         );
 
         console.log("sender_id_from_dashboard",data.sender_id,sender_id);
