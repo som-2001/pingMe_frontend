@@ -12,7 +12,7 @@ import { Chat } from "./pages/Chat";
 import Login from "./pages/Login";
 import toast, { Toaster } from "react-hot-toast";
 import { requestNotificationPermission } from "./firebase";
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { axiosReq } from "./axios/Axios";

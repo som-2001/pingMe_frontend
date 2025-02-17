@@ -41,8 +41,20 @@ export default function Dashboard() {
   const [users, setUsers] = useState([]);
   const [load, setLoad] = useState(false);
   const navigate = useNavigate();
-  const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
-  const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
+  const refreshToken = Cookies?.get("refreshToken");
+
+  let sender_id = null;
+  let username = null;
+
+  if (refreshToken) {
+    try {
+      const decodedToken = jwtDecode(refreshToken) || "invalid token";
+      sender_id = decodedToken?.userId || null;
+      username = decodedToken?.username || null;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+  }
   const [value, setValue] = React.useState("one");
 
   const handleChange = (event, newValue) => {
@@ -61,19 +73,19 @@ export default function Dashboard() {
     });
   }, [sender_id, username]);
 
-
   useEffect(() => {
     const seen_message = (data) => {
       setUsers((prevUsers) => {
         const userIndex = prevUsers.findIndex(
           (user) =>
-            user.sender_id === data.sender_id || user.receiver_id === data.sender_id
+            user.sender_id === data.sender_id ||
+            user.receiver_id === data.sender_id
         );
-  
+
         if (userIndex !== -1) {
           // Create a new array to avoid mutating the original state
           const updatedUsers = [...prevUsers];
-  
+
           // Update the user object with a new unread count
           updatedUsers[userIndex] = {
             ...updatedUsers[userIndex],
@@ -85,24 +97,22 @@ export default function Dashboard() {
               ...updatedUsers[userIndex].sortedComments, // Keep other properties as is
             },
           };
-  
+
           // Return the updated state
           return updatedUsers;
         }
-  
+
         // If user not found, return the previous state unchanged
         return prevUsers;
       });
     };
-  
+
     socket.on("seen_message", seen_message);
-  
+
     return () => {
       socket.off("seen_message", seen_message);
     };
   }, []);
-  
-  
 
   useEffect(() => {
     setLoad(true);
@@ -124,7 +134,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     const DashboardMessage = (data) => {
-     
       setUsers((prevUsers) => {
         const userIndex = prevUsers.findIndex(
           (user) =>

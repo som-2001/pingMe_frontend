@@ -29,7 +29,8 @@ export const ExploreUsersModal = ({ open, setOpen, socket, username }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const loadRef = useRef(null);
   const navigate = useNavigate();
-  const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
+  const refreshToken = Cookies?.get("refreshToken");
+  const sender_id = refreshToken ? jwtDecode(refreshToken)?.userId : null;
 
   // Helper functions for localStorage
   const saveOnlineUsers = (users) => {

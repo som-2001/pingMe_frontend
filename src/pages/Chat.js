@@ -39,8 +39,20 @@ export const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [headerModalOpen, setHeaderModalOpen] = useState(false);
-  const sender_id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
-  const username = jwtDecode(Cookies?.get("refreshToken"))?.username;
+  const refreshToken = Cookies?.get("refreshToken");
+
+  let sender_id = null;
+  let username = null;
+
+  if (refreshToken) {
+    try {
+      const decodedToken = jwtDecode(refreshToken) || "invalid token";
+      sender_id = decodedToken?.userId || null;
+      username = decodedToken?.username || null;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+    }
+  }
   const { id } = useParams();
   const [load, setLoad] = useState(true);
   const [page, setPage] = useState(1);
@@ -94,7 +106,10 @@ export const Chat = () => {
         receiver_id: id,
       })
       .then((res) => {
-        setMessages((prevMessages) => [...res?.data?.messages, ...prevMessages]);
+        setMessages((prevMessages) => [
+          ...res?.data?.messages,
+          ...prevMessages,
+        ]);
         setTotal(res?.data?.totalPages);
       })
       .catch((err) => {

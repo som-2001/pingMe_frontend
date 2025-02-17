@@ -14,24 +14,8 @@ axiosReq.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
- 
       console.error("Response Error:", error.response);
-      if (error.response.status === 403 || error.response.status === 401) {
-        toast.error("Session has expired.");
-      } else if (error.response.status === 500) {
-        toast.error("Server error occurred.");
-      } else {
-        toast.error("Unexpected response error.");
-      }
-    } else if (error.request) {
-      console.error("No response from server:", error.request);
-    } else {
-      console.error("Error:", error.message);
-    }
-    toast.error("An error occurred. Please try again later.");
-    Cookies.remove("refreshToken");
-    window.location.href = "/signin";
-
-    return Promise.reject(error);
+   
   }
+}
 );
