@@ -97,6 +97,12 @@
   margin-bottom: 10px;
 }
 
+.emoji{
+  width: 90%;
+  height: 350px;
+  border-radius: 20px !important;
+  z-index: 100;
+}
 .uploadIcon {
   margin-top: 5px !important;
   font-size: 1.5rem !important;
@@ -111,9 +117,12 @@
 }
 
 .imagePreview {
-  width: 100%;
+  width: 120px;
   border-radius: 10px;
   margin-top: 10px;
+  height: fit-content;
+  object-fit: contain;
+  margin-left: 5px;
 }
 
 .postButton {

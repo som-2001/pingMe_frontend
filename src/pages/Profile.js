@@ -99,6 +99,7 @@ export const Profile = () => {
       .put(`/user/profile/${id}`, data)
       .then((res) => {
         console.log(res.data);
+        localStorage.setItem("profileImage",res.data.imageUrl)
         setEditMode(false);
         toast.success("Updated successfully!!");
       })
