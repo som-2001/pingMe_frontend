@@ -58,6 +58,8 @@ const Login = () => {
         console.log(res.data);
         Cookies.set("accessToken", res.data.accessToken, { expires: 1 / 24 });
         Cookies.set("refreshToken", res.data.refreshToken, { expires: 24 });
+        sessionStorage.setItem("profileImage",res.data.user.profileImage);
+        sessionStorage.setItem("email",res.data.user.email);
         toast.success(res.data.message);
         const id = jwtDecode(Cookies?.get("refreshToken"))?.userId;
         const fcmToken = await requestNotificationPermission();

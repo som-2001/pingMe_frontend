@@ -117,6 +117,7 @@ export const Profile = () => {
       .put(`/user/profileImage/${id}`, formData)
       .then((res) => {
         toast.success("Profile picture is updated successfully!!");
+        sessionStorage.setItem("profileImage",url);
       })
       .catch((err) => {
         console.log(err);
