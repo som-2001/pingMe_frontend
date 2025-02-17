@@ -40,9 +40,9 @@ export const UserAboutGrid = ({
         page: page,
       })
       .then((res) => {
-        setMediaArray([...mediaArray, ...res.data.data]);
-        setTotal(res.data.totalPages || 0);
-        setTotalLength(res.data.totalMedia || 4);
+        setMediaArray([...mediaArray, ...res?.data?.data]);
+        setTotal(res?.data?.totalPages || 0);
+        setTotalLength(res?.data?.totalMedia || 4);
       })
       .catch((err) => {
         console.log(err);

@@ -94,8 +94,8 @@ export const Chat = () => {
         receiver_id: id,
       })
       .then((res) => {
-        setMessages((prevMessages) => [...res.data.messages, ...prevMessages]);
-        setTotal(res.data.totalPages);
+        setMessages((prevMessages) => [...res?.data?.messages, ...prevMessages]);
+        setTotal(res?.data?.totalPages);
       })
       .catch((err) => {
         console.error(err);
