@@ -23,6 +23,7 @@ import { io } from "socket.io-client";
 import styles1 from "../../styles/Dashboard.module.css";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { UserStatusModal } from "../UserStatusModal";
 var relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime);
 
@@ -34,6 +35,7 @@ const socket = io(`${process.env.REACT_APP_BASEURL}/chat`, {
 
 export const StatusComponent = () => {
   const [open, setOpen] = useState(false);
+  const [openStatusModal, setOpenStatusModal] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [statusText, setStatusText] = useState("");
   const [statusImage, setStatusImage] = useState(null);
@@ -46,6 +48,8 @@ export const StatusComponent = () => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [load, setLoad] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [file, setFile] = useState([]);
 
   useEffect(() => {
     axiosReq
@@ -61,15 +65,15 @@ export const StatusComponent = () => {
       });
   }, [page]);
 
-  useEffect(() => {
-    const room = "pingME";
+  // useEffect(() => {
+  //   const room = "pingME";
 
-    socket.emit("pingME_room", {
-      room: room,
-      sender_id: sender_id,
-      username: username,
-    });
-  }, [sender_id, username]);
+  //   socket.emit("pingME_room", {
+  //     room: room,
+  //     sender_id: sender_id,
+  //     username: username,
+  //   });
+  // }, [sender_id, username]);
 
   const emojiPickerRef = useRef(null);
 
@@ -92,8 +96,16 @@ export const StatusComponent = () => {
       console.log(data);
       setUserStatuses((prevUserStatuses) => [
         {
-          userId: { username: data.username, _id: data._id },
-          status: { message: data.message, image: data.image },
+          userId: {
+            username: data.username,
+            _id: data._id,
+            profileImage: data.profileImage,
+          },
+          status: {
+            message: data.message,
+            image: data.image,
+            _id: data.status_id,
+          },
         },
         ...prevUserStatuses,
       ]);
@@ -107,28 +119,40 @@ export const StatusComponent = () => {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const handleOnClose = () => setOpenStatusModal(false);
+  const openStatusModalHandler = (status) => {
+    setSelectedStatus(status);
+    setOpenStatusModal(true);
+  };
 
   const handleEmojiSelect = (event) => {
     setStatusText(statusText + event.detail.unicode);
   };
 
-  const handleImageChange = (e) =>
+  const handleImageChange = (e) => {
+    setFile(e.target.files[0]);
     setStatusImage(URL.createObjectURL(e.target.files[0]));
+  };
 
   const handleAddStatus = () => {
+    const formData = new FormData();
+    formData.append("id", sender_id);
+    formData.append("message", statusText);
+    formData.append("image", file);
+
     axiosReq
-      .post("/status/upload", {
-        id: sender_id,
-        message: statusText,
-        image: statusImage,
+      .post("/status/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
         socket.emit("status-upload", {
           room: "pingMe",
           id: sender_id,
           message: statusText,
-          image: statusImage,
+          image: res.data.status.image,
           username: username,
+          profileImage: res.data.user.profileImage,
+          status_id: res.status._id,
         });
         setStatusText("");
         setStatusImage(null);
@@ -136,16 +160,21 @@ export const StatusComponent = () => {
       })
       .catch((err) => {
         console.log(err);
-        toast.error(err.response.data.message)
+        toast.error(err.response.data.message);
       });
   };
 
   return (
     <div className={styles.statusContainer}>
       {/* My Status Section */}
-      <Grid container alignItems="center" className={styles.myStatus}>
+      <Grid
+        container
+        alignItems="center"
+        className={styles.myStatus}
+        onClick={handleOpen}
+      >
         <Grid item xs={4} md={2} lg={1}>
-          <IconButton onClick={handleOpen}>
+          <IconButton>
             <AddCircleOutlineIcon sx={{ fontSize: "2.5rem" }} />
           </IconButton>
         </Grid>
@@ -198,19 +227,24 @@ export const StatusComponent = () => {
                 alignItems="center"
                 key={index}
                 className={styles.statusItem}
+                onClick={() => openStatusModalHandler(status)}
               >
                 <Grid item xs={4} md={2} lg={1.2}>
                   <div className={styles.statusCircle}>
                     <img
-                      src={status?.userId?.profileImage}
-                      alt="status"
+                      src={
+                        status?.userId?.profileImage !== undefined
+                          ? status?.userId?.profileImage
+                          : "../images/user.jpg"
+                      }
+                      alt=""
                       className={styles.statusImage}
                     />
                   </div>
                 </Grid>
                 <Grid item xs={8} md={10} lg={10.8}>
                   <Typography variant="body1">
-                    {status?.status?.message}
+                    {status?.userId?.username}
                   </Typography>
                   <Typography variant="caption" className={styles.statusTime}>
                     {dayjs(status?.createdAt).format("YYYY/MM/DD HH:mm:ss")}
@@ -225,7 +259,7 @@ export const StatusComponent = () => {
         <div className={styles.modalContent}>
           <div className={styles.profile}>
             <img
-              src={profileImage ?? "https://via.placeholder.com/50"}
+              src={profileImage}
               alt="Profile"
               className={styles.profilePic}
             />
@@ -300,6 +334,13 @@ export const StatusComponent = () => {
           </Button>
         </div>
       </Modal>
+
+      <UserStatusModal
+        open={openStatusModal}
+        onClose={handleOnClose}
+        userStatuses={userStatuses}
+        selectedStatus={selectedStatus}
+      />
     </div>
   );
 };
