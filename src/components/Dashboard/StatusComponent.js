@@ -67,31 +67,6 @@ export const StatusComponent = () => {
       });
   }, [page]);
 
-  // useEffect(() => {
-  //   const room = "pingME";
-
-  //   socket.emit("pingME_room", {
-  //     room: room,
-  //     sender_id: sender_id,
-  //     username: username,
-  //   });
-  // }, [sender_id, username]);
-
-  const emojiPickerRef = useRef(null);
-
-  useEffect(() => {
-    if (emojiPickerRef.current) {
-      emojiPickerRef.current.addEventListener("emoji-click", handleEmojiSelect);
-    }
-    return () => {
-      if (emojiPickerRef.current) {
-        emojiPickerRef.current.removeEventListener(
-          "emoji-click",
-          handleEmojiSelect
-        );
-      }
-    };
-  }, [emojiPickerRef]);
 
   useEffect(() => {
     const status_upload = (data) => {
@@ -125,10 +100,6 @@ export const StatusComponent = () => {
   const openStatusModalHandler = (status) => {
     setSelectedStatus(status);
     setOpenStatusModal(true);
-  };
-
-  const handleEmojiSelect = (event) => {
-    setStatusText(statusText + event.detail.unicode);
   };
 
   const handleImageChange = (e) => {
@@ -258,6 +229,8 @@ export const StatusComponent = () => {
                 </Grid>
               </Grid>
             ))}
+
+            
       </div>
 
       {/* Modal to Add Status */}
@@ -313,23 +286,13 @@ export const StatusComponent = () => {
               accept="image/*"
               onChange={handleImageChange}
             />
-            <span className={styles.uploadIcon}>
+            {/* <span className={styles.uploadIcon}>
               <RoomIcon />
-            </span>
-            <span
-              className={styles.uploadIcon}
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            >
-              <SentimentSatisfiedAltIcon />
-            </span>
+            </span> */}
+          
           </div>
 
-          {showEmojiPicker && (
-            <emoji-picker
-              ref={emojiPickerRef}
-              className={styles.emoji}
-            ></emoji-picker>
-          )}
+         
 
           <Button
             variant="contained"
