@@ -8,6 +8,7 @@ import {
   IconButton,
   Skeleton,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import styles from "../../styles/StatusComponent.module.css";
@@ -50,6 +51,7 @@ export const StatusComponent = () => {
   const [load, setLoad] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [file, setFile] = useState([]);
+  const [statusload,setStatusLoad]=useState(false);
 
   useEffect(() => {
     axiosReq
@@ -93,7 +95,7 @@ export const StatusComponent = () => {
 
   useEffect(() => {
     const status_upload = (data) => {
-      console.log(data);
+    
       setUserStatuses((prevUserStatuses) => [
         {
           userId: {
@@ -135,6 +137,7 @@ export const StatusComponent = () => {
   };
 
   const handleAddStatus = () => {
+    setStatusLoad(true);
     const formData = new FormData();
     formData.append("id", sender_id);
     formData.append("message", statusText);
@@ -145,11 +148,12 @@ export const StatusComponent = () => {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
+        console.log(res.data);
         socket.emit("status-upload", {
           room: "pingMe",
           id: sender_id,
           message: statusText,
-          image: res.data.status.image,
+          image: res.data.status.status.image,
           username: username,
           profileImage: res.data.user.profileImage,
           status_id: res.status._id,
@@ -161,7 +165,9 @@ export const StatusComponent = () => {
       .catch((err) => {
         console.log(err);
         toast.error(err.response.data.message);
-      });
+      }).finally(()=>{
+        setStatusLoad(false);
+      })
   };
 
   return (
@@ -329,8 +335,9 @@ export const StatusComponent = () => {
             variant="contained"
             className={styles.postButton}
             onClick={handleAddStatus}
+            disabled={statusload}
           >
-            Post
+            {statusload ? <CircularProgress size={30}/>:"Post"}
           </Button>
         </div>
       </Modal>

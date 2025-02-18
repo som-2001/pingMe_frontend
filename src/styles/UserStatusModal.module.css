@@ -12,11 +12,15 @@
     padding: 16px;
     box-sizing: border-box;
   }
-  
-  .header {
+  .header1{
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
   }
   
   .profileImage {
@@ -49,8 +53,8 @@
   }
   
   .statusImage {
-    max-width: 100%;
-    max-height: 80%;
+    max-width: 80vw;
+    max-height: 80vh;
     border-radius: 16px;
   }
   
