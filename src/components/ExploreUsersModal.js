@@ -42,7 +42,7 @@ export const ExploreUsersModal = ({ open, setOpen, socket, username }) => {
   };
 
   useEffect(() => {
-    const room = `room_${sender_id}`;
+    const room = `pingMe_room`;
 
     socket.emit("room_join", {
       room: room,
