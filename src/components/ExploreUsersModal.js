@@ -3,11 +3,13 @@ import {
   Box,
   Button,
   CircularProgress,
+  InputAdornment,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Modal,
+  TextField,
   Typography,
 } from "@mui/material";
 import styles from "../styles/Dashboard.module.css";
@@ -20,12 +22,14 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { StyledBadge } from "./StyleBadge";
+import SearchIcon from '@mui/icons-material/Search';
 
 export const ExploreUsersModal = ({ open, setOpen, socket, username }) => {
   const [load, setLoad] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [users, setUsers] = useState([]);
+  const [copyUsers,setCopyUsers]=useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const loadRef = useRef(null);
   const navigate = useNavigate();
@@ -84,6 +88,7 @@ export const ExploreUsersModal = ({ open, setOpen, socket, username }) => {
       .post("/user/userList", { page: page })
       .then((res) => {
         setUsers((prevUsers) => [...prevUsers, ...res.data.users]);
+        setCopyUsers((prevUsers) => [...prevUsers, ...res.data.users])
         setTotal(res.data.total);
       })
       .catch((err) => {
@@ -94,6 +99,21 @@ export const ExploreUsersModal = ({ open, setOpen, socket, username }) => {
       });
   }, [page]);
 
+  const handleSearch = (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+  
+    if (searchTerm.length === 0) {
+      setUsers(copyUsers);
+      return;
+    }
+  
+    const filteredUsers = copyUsers.filter((user) =>
+      user?.username.toLowerCase().includes(searchTerm)
+    );
+  
+    setUsers(filteredUsers);
+  };
+  
   return (
     <Modal open={open} onClose={() => setOpen(false)} className={styles.modal}>
       <Box className={styles.modalContent}>
@@ -101,9 +121,14 @@ export const ExploreUsersModal = ({ open, setOpen, socket, username }) => {
           <Typography variant="h6" className={styles.modalHeader}>
             Explore People
           </Typography>
-
+         
           <CloseIcon sx={{ cursor: "pointer" }} onClick={() => setOpen(false)} />
         </Box>
+        <TextField type="text" placeholder="Search Users..." onChange={handleSearch} fullWidth slotProps={{
+            input: {
+              startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>,
+            },
+          }}/>
         <List className={styles.list}>
           {users.map((user) => (
             <ListItem
@@ -124,7 +149,7 @@ export const ExploreUsersModal = ({ open, setOpen, socket, username }) => {
               </ListItemAvatar>
               <ListItemText
                 primary={sender_id === user?._id ? "You" : user?.username}
-                secondary={user?.description || "Hey there!! I am using pingMe."}
+                secondary={user?.description || "Hey there!! I am using ChatterBox."}
               />
               <ChevronRightIcon className={styles.chevronIcon} />
             </ListItem>
