@@ -3,7 +3,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useParams,
 } from "react-router-dom";
 import RegistrationForm from "./pages/Registration";
 import Home from "./pages/Home";
@@ -67,6 +66,7 @@ function App() {
 
   return (
     <>
+  
       <Toaster />
       <Router>
         <Routes>

@@ -5,6 +5,33 @@
   flex-direction: column;
 }
 
+@keyframes aurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animation {
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  background: linear-gradient(45deg, #ff00ff, #88ff00, #00ffdd, #4c789c, #6b6bbb);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: aurora 6s infinite ease-in-out;
+}
+
+.logoanimation {
+  font-size: 1rem;
+  font-weight: bold;
+  background: linear-gradient(45deg, #ff00ff, #88ff00, #00ffdd, #4c789c, #6b6bbb);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: aurora 6s infinite ease-in-out;
+}
 .navbar {
   background-color: transparent !important;
   box-shadow: none !important;
