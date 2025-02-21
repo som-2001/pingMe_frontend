@@ -20,7 +20,7 @@ export const UserStatusModal = ({
             src={selectedStatus?.userId?.profileImage ?? "../images/user.jpg"}
             alt="User Profile"
             className={styles.profileImage}
-          />
+          /> 
           <div>
             <Typography variant="h6" className={styles.username}>
               {selectedStatus?.userId?.username}
