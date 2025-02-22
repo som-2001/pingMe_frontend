@@ -13,7 +13,7 @@ import styles from "../../styles/Dashboard.module.css";
 
 export const MessageList = ({
   users,
-  sender_id,
+  sender_id, 
   selectedUser,
   setSelectedUser,
 }) => {

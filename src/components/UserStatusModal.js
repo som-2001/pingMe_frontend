@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Modal, Box, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import styles from "../styles/UserStatusModal.module.css";
@@ -15,7 +15,9 @@ export const UserStatusModal = ({
   return (
     <Modal open={open} onClose={onClose}>
       <div className={styles.modalContent}>
-        <Box className={styles.header}>
+
+        <Box className={styles.header1}>
+          <div className={styles.header}>
           <img
             src={selectedStatus?.userId?.profileImage ?? "../images/user.jpg"}
             alt="User Profile"
@@ -29,10 +31,13 @@ export const UserStatusModal = ({
               {dayjs(selectedStatus?.createdAt).format("YYYY/MM/DD HH:mm:ss")}
             </Typography>
           </div>
+
+          </div>
           <IconButton onClick={onClose} className={styles.closeButton}>
             <CloseIcon sx={{color:"white"}}/>
           </IconButton>
         </Box>
+        
 
         <Box className={styles.statusContent}>
           <img

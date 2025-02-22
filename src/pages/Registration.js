@@ -75,7 +75,7 @@ const RegistrationForm = () => {
     <Grid container className={styles.container}>
       <Grid item xs={12} md={6} className={styles.leftPanel}>
         <Typography variant="h4" className={styles.logo}>
-          PingMe
+        ChatterBox
         </Typography>
         <Typography className={styles.description}>
           Share Your Smile with this world and Find Friends

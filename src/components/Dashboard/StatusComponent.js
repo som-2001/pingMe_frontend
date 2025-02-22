@@ -8,6 +8,7 @@ import {
   IconButton,
   Skeleton,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import styles from "../../styles/StatusComponent.module.css";
@@ -50,6 +51,7 @@ export const StatusComponent = () => {
   const [load, setLoad] = useState(true);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [file, setFile] = useState([]);
+  const [statusload,setStatusLoad]=useState(false);
 
   useEffect(() => {
     axiosReq
@@ -65,35 +67,10 @@ export const StatusComponent = () => {
       });
   }, [page]);
 
-  // useEffect(() => {
-  //   const room = "pingME";
-
-  //   socket.emit("pingME_room", {
-  //     room: room,
-  //     sender_id: sender_id,
-  //     username: username,
-  //   });
-  // }, [sender_id, username]);
-
-  const emojiPickerRef = useRef(null);
-
-  useEffect(() => {
-    if (emojiPickerRef.current) {
-      emojiPickerRef.current.addEventListener("emoji-click", handleEmojiSelect);
-    }
-    return () => {
-      if (emojiPickerRef.current) {
-        emojiPickerRef.current.removeEventListener(
-          "emoji-click",
-          handleEmojiSelect
-        );
-      }
-    };
-  }, [emojiPickerRef]);
 
   useEffect(() => {
     const status_upload = (data) => {
-      console.log(data);
+    
       setUserStatuses((prevUserStatuses) => [
         {
           userId: {
@@ -125,16 +102,13 @@ export const StatusComponent = () => {
     setOpenStatusModal(true);
   };
 
-  const handleEmojiSelect = (event) => {
-    setStatusText(statusText + event.detail.unicode);
-  };
-
   const handleImageChange = (e) => {
     setFile(e.target.files[0]);
     setStatusImage(URL.createObjectURL(e.target.files[0]));
   };
 
   const handleAddStatus = () => {
+    setStatusLoad(true);
     const formData = new FormData();
     formData.append("id", sender_id);
     formData.append("message", statusText);
@@ -145,11 +119,12 @@ export const StatusComponent = () => {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((res) => {
+        console.log(res.data);
         socket.emit("status-upload", {
           room: "pingMe",
           id: sender_id,
           message: statusText,
-          image: res.data.status.image,
+          image: res.data.status.status.image,
           username: username,
           profileImage: res.data.user.profileImage,
           status_id: res.status._id,
@@ -161,7 +136,9 @@ export const StatusComponent = () => {
       .catch((err) => {
         console.log(err);
         toast.error(err.response.data.message);
-      });
+      }).finally(()=>{
+        setStatusLoad(false);
+      })
   };
 
   return (
@@ -252,6 +229,8 @@ export const StatusComponent = () => {
                 </Grid>
               </Grid>
             ))}
+
+            
       </div>
 
       {/* Modal to Add Status */}
@@ -307,30 +286,21 @@ export const StatusComponent = () => {
               accept="image/*"
               onChange={handleImageChange}
             />
-            <span className={styles.uploadIcon}>
+            {/* <span className={styles.uploadIcon}>
               <RoomIcon />
-            </span>
-            <span
-              className={styles.uploadIcon}
-              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            >
-              <SentimentSatisfiedAltIcon />
-            </span>
+            </span> */}
+          
           </div>
 
-          {showEmojiPicker && (
-            <emoji-picker
-              ref={emojiPickerRef}
-              className={styles.emoji}
-            ></emoji-picker>
-          )}
+         
 
           <Button
             variant="contained"
             className={styles.postButton}
             onClick={handleAddStatus}
+            disabled={statusload}
           >
-            Post
+            {statusload ? <CircularProgress size={30}/>:"Post"}
           </Button>
         </div>
       </Modal>

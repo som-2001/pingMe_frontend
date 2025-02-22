@@ -135,15 +135,7 @@ export const UserAboutGrid = ({
             <Box className={styles.flexMediaButtons}>
               <Typography variant="body1" className={styles.sectionTitle}>
                 Media{" "}
-                {mediaLoad ? (
-                  <Skeleton animation="wave" width={40} />
-                ) : (
-                  `(${
-                    totalLength + updatedMedia.length - 4 < 0
-                      ? "0"
-                      : totalLength + updatedMedia.length - 4
-                  })`
-                )}
+                
               </Typography>
 
               <ArrowForwardIosIcon

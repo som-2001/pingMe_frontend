@@ -18,6 +18,7 @@ import { axiosReq } from "../axios/Axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const schema = yup.object().shape({
   about: yup
@@ -48,7 +49,13 @@ export const Profile = () => {
   const [address, setAddress] = useState("");
   const [profileImg, setProfileImg] = useState("");
   const [load, setLoad] = useState(true);
+  const navigate=useNavigate();
 
+  const logout=()=>{
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken"); 
+    navigate("/signin");
+  } 
   useEffect(() => {
 
     axiosReq
@@ -57,7 +64,7 @@ export const Profile = () => {
         console.log(res.data);
         setUsername(res?.data?.username);
         setAbout(
-          res?.data?.about ||
+          res?.data?.about || 
             "Hi! I'm a passionate developer who loves coding and designing."
         );
         setDescription(
@@ -126,8 +133,11 @@ export const Profile = () => {
   };
   return (
     <div className={styles.profile_container}>
+      
       <Card className={styles.profile_card}>
+      
         <CardContent>
+       
           <Grid container spacing={3}>
             {/* Profile Image */}
             <Grid
@@ -263,6 +273,16 @@ export const Profile = () => {
                   </Typography>
 
                   <Box className={styles.buttonContainer}>
+                  
+                  <Button
+                      onClick={logout}
+                      variant="contained"
+                      color="primary"
+                      className={styles.edit_button}
+                    >
+                      Logout
+                    </Button>
+
                     <Button
                       onClick={() => setEditMode(true)}
                       variant="contained"
