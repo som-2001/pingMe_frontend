@@ -32,7 +32,7 @@ function App() {
   
   useEffect(() => {
     if (!sender_id) return;
-    requestNotificationPermission().then((token) => {
+    requestNotificationPermission().then((token) => { 
       if (token) {
         axiosReq.post("/users/update-fcm-token", { sender_id, token });
       }
